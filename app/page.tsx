@@ -1,3 +1,1 @@
-export default function Home() {
-  return <h5>s</h5>;
-}
+export default function Home() {}

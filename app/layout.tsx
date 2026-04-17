@@ -1,10 +1,7 @@
-import {
-  Sidebar,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
 import React from "react";
 import "./globals.css";
+import StickyTopBar from "@/designs/StickyTopBar";
 
 export default function RootLayout({
   children,
@@ -16,15 +13,11 @@ export default function RootLayout({
       <head />
       <body>
         <SidebarProvider>
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="flex-1">
-              <div className="p-4">
-                <SidebarTrigger />
-              </div>
-              {children}
-            </main>
-          </div>
+          <Sidebar />
+          <main>
+            <StickyTopBar />
+            {children}
+          </main>
         </SidebarProvider>
       </body>
     </html>
