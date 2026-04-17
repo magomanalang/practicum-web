@@ -1,9 +1,11 @@
 import { Outlet } from "react-router";
+import { SidebarTemplate } from "./SidebarTemplate";
 
 export function SidebarLayoutTemplate() {
   return (
     <div className="flex h-screen bg-gray-50">
       <SidebarTemplate />
+
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-white border-b border-gray-200 flex items-center px-6">
           <div className="flex-1">
