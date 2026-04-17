@@ -1,4 +1,3 @@
-import { Link, useLocation } from "react-router";
 import { Home, Menu, X, LucideIcon } from "lucide-react";
 import { useState } from "react";
 
@@ -10,8 +9,11 @@ interface NavigationItem {
 
 const navigation: NavigationItem[] = [{ name: "Home", href: "/", icon: Home }];
 
-export function SidebarTemplate() {
-  const location = useLocation();
+interface SidebarTemplateProps {
+  currentPath?: string; // Optional: Pass the current path to highlight active state
+}
+
+export function SidebarTemplate({ currentPath = "/" }: SidebarTemplateProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -23,20 +25,22 @@ export function SidebarTemplate() {
         />
       )}
 
-      <button
-        className="lg:hidden fixed top-4 left-4 z-50 text-gray-500 hover:text-gray-700"
-        onClick={() => setSidebarOpen(true)}
-      >
-        <Menu className="w-6 h-6" />
-      </button>
+      {!sidebarOpen && (
+        <button
+          className="lg:hidden fixed top-4 left-4 z-50 text-gray-500 hover:text-gray-700 bg-white p-2 rounded-md shadow-sm border border-gray-200"
+          onClick={() => setSidebarOpen(true)}
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+      )}
 
       <div
         className={`
-        fixed lg:static inset-y-0 left-0 z-50
-        w-64 bg-white border-r border-gray-200
-        transform transition-transform duration-200 ease-in-out
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-      `}
+          fixed lg:static inset-y-0 left-0 z-50
+          w-64 bg-white border-r border-gray-200
+          transform transition-transform duration-200 ease-in-out
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
@@ -56,11 +60,12 @@ export function SidebarTemplate() {
 
           <nav className="flex-1 px-4 py-6 space-y-1">
             {navigation.map((item) => {
-              const isActive = location.pathname === item.href;
+              const isActive = currentPath === item.href;
+
               return (
-                <Link
+                <a
                   key={item.name}
-                  to={item.href}
+                  href={item.href}
                   className={`
                     flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium
                     transition-colors
@@ -74,7 +79,7 @@ export function SidebarTemplate() {
                 >
                   <item.icon className="w-5 h-5" />
                   {item.name}
-                </Link>
+                </a>
               );
             })}
           </nav>
