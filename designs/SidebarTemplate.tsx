@@ -9,6 +9,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { PanelLeftIcon } from "lucide-react";
+<<<<<<< Updated upstream
 =======
 import { Home, Menu, X, LucideIcon } from "lucide-react";
 import { useState } from "react";
@@ -30,6 +31,11 @@ export function SidebarTemplate({ currentPath = "/" }: SidebarTemplateProps) {
 >>>>>>> Stashed changes
 
 export default function Sidebar() {
+=======
+import Link from "next/link";
+
+export function SidebarTemplate() {
+>>>>>>> Stashed changes
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -46,12 +52,16 @@ export default function Sidebar() {
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col space-y-4 mt-6">
+<<<<<<< Updated upstream
           <a
             href="#"
             className="text-sm font-medium hover:text-blue-600 transition-colors"
           >
             Dashboard
           </a>
+=======
+          <Link href="/Analytics">Dashboard</Link>
+>>>>>>> Stashed changes
           <a
             href="#"
             className="text-sm font-medium hover:text-blue-600 transition-colors"
