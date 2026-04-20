@@ -27,7 +27,7 @@ export function SidebarTemplate() {
         </SheetHeader>
         <div className="flex flex-col space-y-4 mt-6">
           <a
-            href="/Analytics"
+            href="/dashboard"
             className="text-sm font-medium hover:text-blue-600 transition-colors"
           >
             Dashboard

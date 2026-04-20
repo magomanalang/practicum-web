@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SidebarTemplate } from "./SidebarTemplate";
 
 export default function Navbar() {
@@ -34,9 +35,20 @@ export default function Navbar() {
           </div>
 
           <div>
-            <button className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-all">
-              Get Started
-            </button>
+          <div className="flex items-center">
+            <Link href="/login">
+              <button className="mr-4 bg-black text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 transition-all">
+                Already Have an Account?
+              <button className="mr-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-black transition-all">
+                Log In
+              </button>
+            </Link>
+            <Link href="/signup">
+              <button className="bg-black text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 transition-all">
+              <button className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-all">
+                Get Started
+              </button>
+            </Link>
           </div>
         </div>
       </div>
