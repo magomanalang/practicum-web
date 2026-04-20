@@ -1,4 +1,3 @@
-import Sidebar from "./SidebarTemplate";
 import { SidebarTemplate } from "./SidebarTemplate";
 
 export default function Navbar() {
