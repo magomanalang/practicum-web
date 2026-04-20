@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -8,6 +9,25 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { PanelLeftIcon } from "lucide-react";
+=======
+import { Home, Menu, X, LucideIcon } from "lucide-react";
+import { useState } from "react";
+
+interface NavigationItem {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+}
+
+const navigation: NavigationItem[] = [{ name: "Home", href: "/", icon: Home }];
+
+interface SidebarTemplateProps {
+  currentPath?: string; 
+}
+
+export function SidebarTemplate({ currentPath = "/" }: SidebarTemplateProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+>>>>>>> Stashed changes
 
 export default function Sidebar() {
   return (
