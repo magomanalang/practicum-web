@@ -1,4 +1,4 @@
-import Sidebar from "./SidebarTemplate";
+import { Sidebar } from "@/components/ui/sidebar";
 
 export default function Navbar() {
   return (
