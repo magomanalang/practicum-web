@@ -1,4 +1,5 @@
-import { Sidebar } from "@/components/ui/sidebar";
+import Sidebar from "./SidebarTemplate";
+import { SidebarTemplate } from "./SidebarTemplate";
 
 export default function Navbar() {
   return (
@@ -7,7 +8,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
           <div className="shrink-0 flex items-center gap-2">
             <div className="flex justify-start w-full">
-              <Sidebar />
+              <SidebarTemplate />
             </div>
             <span className="font-bold text-xl tracking-tight">BRAND</span>
           </div>

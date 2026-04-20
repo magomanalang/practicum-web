@@ -7,7 +7,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Home, Menu, X, LucideIcon, PanelLeftIcon } from "lucide-react";
+import { PanelLeftIcon } from "lucide-react";
+import { Home, Menu, X, LucideIcon } from "lucide-react";
 import { useState } from "react";
 
 interface NavigationItem {
