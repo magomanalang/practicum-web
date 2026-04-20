@@ -36,7 +36,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartAreaDefault() {
+export function AreaChartAnalytics() {
   return (
     <Card>
       <CardHeader>

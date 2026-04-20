@@ -40,7 +40,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartLineDots() {
+export function LineChartAnalytics() {
   return (
     <Card>
       <CardHeader>

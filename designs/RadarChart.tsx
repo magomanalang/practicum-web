@@ -36,7 +36,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartRadarDefault() {
+export function RadarChartAnalytics() {
   return (
     <Card>
       <CardHeader className="items-center pb-4">
@@ -48,7 +48,7 @@ export function ChartRadarDefault() {
       <CardContent className="pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-62.5"
         >
           <RadarChart data={chartData}>
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
