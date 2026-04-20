@@ -28,14 +28,11 @@ interface SidebarTemplateProps {
 
 export function SidebarTemplate({ currentPath = "/" }: SidebarTemplateProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
->>>>>>> Stashed changes
 
 export default function Sidebar() {
-=======
 import Link from "next/link";
 
 export function SidebarTemplate() {
->>>>>>> Stashed changes
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -52,16 +49,13 @@ export function SidebarTemplate() {
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col space-y-4 mt-6">
-<<<<<<< Updated upstream
           <a
             href="#"
             className="text-sm font-medium hover:text-blue-600 transition-colors"
           >
             Dashboard
           </a>
-=======
           <Link href="/Analytics">Dashboard</Link>
->>>>>>> Stashed changes
           <a
             href="#"
             className="text-sm font-medium hover:text-blue-600 transition-colors"
