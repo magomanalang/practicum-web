@@ -1,8 +1,5 @@
-<<<<<<< Updated upstream
 import Sidebar from "./SidebarTemplate";
-=======
 import { SidebarTemplate } from "./SidebarTemplate";
->>>>>>> Stashed changes
 
 export default function Navbar() {
   return (
