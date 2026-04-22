@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SidebarTemplate } from "./SidebarTemplate";
 
 export default function Navbar() {
@@ -9,7 +10,7 @@ export default function Navbar() {
             <div className="flex justify-start w-full">
               <SidebarTemplate />
             </div>
-            <span className="font-bold text-xl tracking-tight">BRAND</span>
+            <span className="font-bold text-xl tracking-tight px-8">BRAND</span>
           </div>
 
           <div className="hidden md:flex space-x-8">
@@ -19,12 +20,13 @@ export default function Navbar() {
             >
               Product
             </a>
-            <a
-              href="#"
+            <Link
+              href="/"
               className="text-sm font-medium hover:text-blue-600 transition-colors"
             >
-              Resources
-            </a>
+              Home
+            </Link>
+
             <a
               href="#"
               className="text-sm font-medium hover:text-blue-600 transition-colors"
@@ -33,10 +35,17 @@ export default function Navbar() {
             </a>
           </div>
 
-          <div>
-            <button className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-all">
-              Get Started
-            </button>
+          <div className="flex items-center">
+            <Link href="/login">
+              <button className="mr-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-black transition-all">
+                Log In
+              </button>
+            </Link>
+            <Link href="/signup">
+              <button className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 transition-all">
+                Get Started
+              </button>
+            </Link>
           </div>
         </div>
       </div>
