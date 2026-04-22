@@ -8,6 +8,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { PanelLeftIcon } from "lucide-react";
+import Link from "next/link";
 
 export function SidebarTemplate() {
   return (
@@ -26,24 +27,24 @@ export function SidebarTemplate() {
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col space-y-4 mt-6">
-          <a
+          <Link
             href="/dashboard"
             className="text-sm font-medium hover:text-blue-600 transition-colors"
           >
             Dashboard
-          </a>
-          <a
+          </Link>
+          <Link
             href="#"
             className="text-sm font-medium hover:text-blue-600 transition-colors"
           >
             Settings
-          </a>
-          <a
+          </Link>
+          <Link
             href="#"
             className="text-sm font-medium hover:text-blue-600 transition-colors"
           >
             Profile
-          </a>
+          </Link>
         </div>
       </SheetContent>
     </Sheet>
