@@ -10,7 +10,7 @@ export default function Navbar() {
             <div className="flex justify-start w-full">
               <SidebarTemplate />
             </div>
-            <span className="font-bold text-xl tracking-tight">BRAND</span>
+            <span className="font-bold text-xl tracking-tight px-8">BRAND</span>
           </div>
 
           <div className="hidden md:flex space-x-8">
@@ -20,12 +20,13 @@ export default function Navbar() {
             >
               Product
             </a>
-            <a
-              href="#"
+            <Link
+              href="/"
               className="text-sm font-medium hover:text-blue-600 transition-colors"
             >
-              Resources
-            </a>
+              Home
+            </Link>
+
             <a
               href="#"
               className="text-sm font-medium hover:text-blue-600 transition-colors"
