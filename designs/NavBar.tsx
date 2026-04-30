@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SidebarTemplate } from "./SidebarTemplate";
+import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
   return (
@@ -10,7 +11,11 @@ export default function Navbar() {
             <div className="flex justify-start w-full">
               <SidebarTemplate />
             </div>
-            <span className="font-bold text-xl tracking-tight px-8">BRAND</span>
+            <span className="font-bold text-xl tracking-tight px-8">
+              LOANDEX
+            </span>
+
+            {/* <Button variant="outline" onClick={isDev = true}>Switch to Operational User</Button> */}
           </div>
 
           <div className="hidden md:flex space-x-8">
@@ -18,7 +23,7 @@ export default function Navbar() {
               href="#"
               className="text-sm font-medium hover:text-blue-600 transition-colors"
             >
-              Product
+              Apply for Loan
             </a>
             <Link
               href="/"
@@ -31,7 +36,14 @@ export default function Navbar() {
               href="#"
               className="text-sm font-medium hover:text-blue-600 transition-colors"
             >
-              Pricing
+              History
+            </a>
+
+            <a
+              href="#"
+              className="text-sm font-medium hover:text-blue-600 transition-colors"
+            >
+              Calculator
             </a>
           </div>
 
