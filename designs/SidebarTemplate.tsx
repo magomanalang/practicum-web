@@ -60,6 +60,35 @@ export function SidebarTemplate() {
             <UserCircle className="h-4 w-4" />
             Profile
           </Link>
+
+          <Link
+            href="/"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
+          >
+            <UserCircle className="h-4 w-4" />
+            Offers
+          </Link>
+          <Link
+            href="/"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
+          >
+            <UserCircle className="h-4 w-4" />
+            Special Promotions
+          </Link>
+          <Link
+            href="/"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
+          >
+            <UserCircle className="h-4 w-4" />
+            Apply for Loan
+          </Link>
+          <Link
+            href="/"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
+          >
+            <UserCircle className="h-4 w-4" />
+            Calculator
+          </Link>
         </nav>
 
         <div className="absolute bottom-6 left-6 right-6 border-t pt-4">
