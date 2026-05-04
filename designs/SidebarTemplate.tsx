@@ -24,10 +24,12 @@ export const appLinks = [
     label: "Manage Sections",
     icon: LayoutList,
   },
-  { href: "/dev/cruds", label: "CRUD Builder", icon: Database },
-  { href: "/dev/roles", label: "Roles", icon: ShieldCheck },
-  { href: "/dev/role-map", label: "Map Roles", icon: GitMerge },
-  { href: "/dev/promotions", label: "Promotions Config", icon: Tag },
+  { href: "/offers", label: "Offers", icon: Database },
+  { href: "/calculator", label: "Calculator", icon: UserCircle },
+  { href: "/history", label: "History", icon: GitMerge },
+  { href: "/promotions", label: "Promotions", icon: Tag },
+  { href: "/profile", label: "Roles", icon: ShieldCheck },
+  { href: "/settings", label: "Settings", icon: ShieldCheck },
 ];
 
 export const devLinks = [
