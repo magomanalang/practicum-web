@@ -15,6 +15,30 @@ import {
   Home,
 } from "lucide-react";
 import Link from "next/link";
+import { Database, GitMerge, LayoutList, ShieldCheck, Tag } from "lucide-react";
+import { NavSection } from "./NavSection";
+
+export const appLinks = [
+  {
+    href: "/dev/sections",
+    label: "Manage Sections",
+    icon: LayoutList,
+  },
+  { href: "/dev/cruds", label: "CRUD Builder", icon: Database },
+  { href: "/dev/roles", label: "Roles", icon: ShieldCheck },
+  { href: "/dev/role-map", label: "Map Roles", icon: GitMerge },
+  { href: "/dev/promotions", label: "Promotions Config", icon: Tag },
+];
+
+export const devLinks = [
+  { href: "/dev/sections", label: "Manage Sections", icon: LayoutList },
+  { href: "/dev/cruds", label: "CRUD Builder", icon: Database },
+  { href: "/dev/roles", label: "Roles", icon: ShieldCheck },
+  { href: "/dev/role-map", label: "Map Roles", icon: GitMerge },
+  { href: "/dev/promotions", label: "Promotions Config", icon: Tag },
+];
+
+const isDev = process.env.NODE_ENV === "development";
 
 export function SidebarTemplate() {
   return (
@@ -35,62 +59,18 @@ export function SidebarTemplate() {
             Access various sections of the application.
           </SheetDescription>
         </SheetHeader>
-
         <nav className="flex flex-col gap-2 mt-6">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
-          </Link>
+          <NavSection links={appLinks} />
 
-          <Link
-            href="/settings"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
-          >
-            <Settings className="h-4 w-4" />
-            Settings
-          </Link>
-
-          <Link
-            href="/profile"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
-          >
-            <UserCircle className="h-4 w-4" />
-            Profile
-          </Link>
-
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
-          >
-            <UserCircle className="h-4 w-4" />
-            Offers
-          </Link>
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
-          >
-            <UserCircle className="h-4 w-4" />
-            Special Promotions
-          </Link>
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
-          >
-            <UserCircle className="h-4 w-4" />
-            Apply for Loan
-          </Link>
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
-          >
-            <UserCircle className="h-4 w-4" />
-            Calculator
-          </Link>
+          {isDev && (
+            <>
+              <div className="mt-4 mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t pt-4">
+                Dev / Admin
+              </div>
+              <NavSection links={devLinks} />
+            </>
+          )}
         </nav>
-
         <div className="absolute bottom-6 left-6 right-6 border-t pt-4">
           <p className="text-xs text-muted-foreground text-center">
             Version 1.0.2
