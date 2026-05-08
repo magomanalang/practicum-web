@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { SidebarTemplate } from "./SidebarTemplate";
-import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 
 export default function Navbar() {
+
+  useSession();
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,8 +17,6 @@ export default function Navbar() {
             <span className="font-bold text-xl tracking-tight px-8">
               LOANDEX
             </span>
-
-            {/* <Button variant="outline" onClick={isDev = true}>Switch to Operational User</Button> */}
           </div>
 
           <div className="hidden md:flex space-x-8">
