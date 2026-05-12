@@ -37,8 +37,8 @@ export function ApplicationForm({
   }
 
   return (
-    <div className="w-full px-4 py-12 md:py-16 flex flex-col items-center justify-center">
-      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-8">
+    <div className="dark w-full min-h-screen px-4 py-12 md:py-16 flex flex-col items-center justify-center bg-green-950 text-zinc-300">
+      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-8 text-green-400">
         Loan Application
       </h1>
       <Card className="w-full max-w-2xl" {...props}>
