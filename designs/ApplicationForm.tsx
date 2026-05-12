@@ -64,11 +64,11 @@ export function ApplicationForm() {
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="email">AddressLine1</FieldLabel>
+            <FieldLabel htmlFor="email">Address Line</FieldLabel>
             <Input
               id="email"
               type="email"
-              placeholder="m@example.com"
+              placeholder="Unit no. / Brgy. Name / Street Name / Village Name"
               value={form.email}
               onChange={handleChange}
               required
@@ -95,6 +95,8 @@ export function ApplicationForm() {
 
           <FieldGroup>
             <Field>
+              <input type="file" name="image" accept="image/*" required />
+              <button type="submit">Upload Image</button> 
               <Button type="submit" disabled={loading}>
                 {loading ? "Creating account..." : "Create Account"}
               </Button>
@@ -104,8 +106,6 @@ export function ApplicationForm() {
               <FieldDescription className="px-6 text-center">
                 Already have an account? <a href="#">Sign in</a>
               </FieldDescription>
-              <input type="file" name="image" accept="image/*" required />
-              <button type="submit">Upload Image</button>
             </Field>
           </FieldGroup>
         </FieldGroup>
