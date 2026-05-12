@@ -32,6 +32,15 @@ export const appLinks = [
   { href: "/settings", label: "Settings", icon: ShieldCheck },
 ];
 
+export const approverLinks = [
+  { href: "/approver/loans", label: "Approve/Reject Loans", icon: LayoutList },
+  {
+    href: "/approver/applicationforms",
+    label: "Approve/Reject Application Forms",
+    icon: Database,
+  },
+];
+
 export const devLinks = [
   { href: "/dev/sections", label: "Manage Sections", icon: LayoutList },
   { href: "/dev/cruds", label: "CRUD Builder", icon: Database },
@@ -41,6 +50,7 @@ export const devLinks = [
 ];
 
 const isDev = process.env.NODE_ENV === "development";
+const isEmployee = process.env.NODE_ENV === "employee";
 
 export function SidebarTemplate() {
   return (
@@ -63,6 +73,11 @@ export function SidebarTemplate() {
         </SheetHeader>
         <nav className="flex flex-col gap-2 mt-6">
           <NavSection links={appLinks} />
+
+          <div className="mt-4 mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t pt-4">
+            Employee
+          </div>
+          <NavSection links={approverLinks} />
 
           {isDev && (
             <>
