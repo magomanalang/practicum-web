@@ -3,7 +3,6 @@ import { SidebarTemplate } from "./SidebarTemplate";
 import { useSession } from "next-auth/react";
 
 export default function Navbar() {
-
   useSession();
 
   return (
@@ -21,7 +20,7 @@ export default function Navbar() {
 
           <div className="hidden md:flex space-x-8">
             <a
-              href="#"
+              href="/application"
               className="text-sm font-medium hover:text-blue-600 transition-colors"
             >
               Apply for Loan
