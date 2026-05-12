@@ -1,3 +1,5 @@
-export default function Page() {
-  return <h1>halo</h1>;
+import { ApplicationForm } from "@/designs/ApplicationForm";
+
+export default async function Page() {
+  return <ApplicationForm />;
 }
