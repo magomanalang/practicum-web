@@ -10,11 +10,35 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // 👇 Replace this with your actual DB user check
-        const user = { id: "1", email: credentials?.email };
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
 
-        if (user) return user;
-        return null;
+        try {
+          // 👇 Call your .NET Aspire API endpoint
+          // Make sure to define NEXT_PUBLIC_API_URL in your .env file (e.g., http://localhost:5000)
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+              }),
+            },
+          );
+
+          const user = await res.json();
+
+          if (res.ok && user) {
+            return user; // NextAuth creates a session for this user
+          }
+          return null;
+        } catch (error) {
+          console.error("Authentication failed:", error);
+          return null;
+        }
       },
     }),
   ],
