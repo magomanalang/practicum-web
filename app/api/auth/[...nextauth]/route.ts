@@ -15,8 +15,6 @@ const handler = NextAuth({
         }
 
         try {
-          // 👇 Call your .NET Aspire API endpoint
-          // Make sure to define NEXT_PUBLIC_API_URL in your .env file (e.g., http://localhost:5000)
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
             {
@@ -32,7 +30,7 @@ const handler = NextAuth({
           const user = await res.json();
 
           if (res.ok && user) {
-            return user; // NextAuth creates a session for this user
+            return user;
           }
           return null;
         } catch (error) {
