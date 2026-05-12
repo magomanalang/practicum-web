@@ -35,7 +35,7 @@ export function ApplicationForm() {
       <form onSubmit={handleSubmit}>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
+            <FieldLabel htmlFor="lastName">Full Name</FieldLabel>
             <Input
               id="lastName"
               type="text"
@@ -45,7 +45,7 @@ export function ApplicationForm() {
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="middleName">Middle Name</FieldLabel>
+            <FieldLabel htmlFor="middleName">Country</FieldLabel>
             <Input
               id="middleName"
               type="text"
@@ -54,7 +54,7 @@ export function ApplicationForm() {
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="firstName">First Name</FieldLabel>
+            <FieldLabel htmlFor="firstName">Zip Code</FieldLabel>
             <Input
               id="firstName"
               type="text"
@@ -64,7 +64,7 @@ export function ApplicationForm() {
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <FieldLabel htmlFor="email">AddressLine1</FieldLabel>
             <Input
               id="email"
               type="email"
@@ -78,7 +78,7 @@ export function ApplicationForm() {
             </FieldDescription>
           </Field>
           <Field>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <FieldLabel htmlFor="password">Document</FieldLabel>
             <Input
               id="password"
               type="password"
@@ -89,16 +89,6 @@ export function ApplicationForm() {
             <FieldDescription>
               Must be at least 8 characters long.
             </FieldDescription>
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
-            <Input
-              id="confirmPassword"
-              type="password"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              required
-            />
           </Field>
 
           {error && <p className="text-sm text-red-500">{error}</p>}
