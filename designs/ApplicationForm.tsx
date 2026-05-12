@@ -2,6 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Field,
   FieldDescription,
   FieldGroup,
@@ -10,106 +17,109 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-export function ApplicationForm() {
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
+export function ApplicationForm({
+  ...props
+}: React.ComponentProps<typeof Card>) {
   const [form, setForm] = useState({
-    lastName: "",
-    middleName: "",
-    firstName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    fullName: "",
+    country: "",
+    zipCode: "",
+    address: "",
   });
 
-  function handleSubmit(): void {
-    throw new Error("Function not implemented.");
+  function handleSubmit(e: React.FormEvent): void {
+    e.preventDefault();
+    // TODO: Handle form submission later
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   }
+
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="lastName">Full Name</FieldLabel>
-            <Input
-              id="lastName"
-              type="text"
-              value={form.lastName}
-              onChange={handleChange}
-              required
-            />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="middleName">Country</FieldLabel>
-            <Input
-              id="middleName"
-              type="text"
-              value={form.middleName}
-              onChange={handleChange}
-            />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="firstName">Zip Code</FieldLabel>
-            <Input
-              id="firstName"
-              type="text"
-              value={form.firstName}
-              onChange={handleChange}
-              required
-            />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="email">Address Line</FieldLabel>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Unit no. / Brgy. Name / Street Name / Village Name"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-            <FieldDescription>
-              We&apos;ll use this to contact you.
-            </FieldDescription>
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="password">Document</FieldLabel>
-            <Input
-              id="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-            <FieldDescription>
-              Must be at least 8 characters long.
-            </FieldDescription>
-          </Field>
+    <div className="w-full px-4 py-12 md:py-16 flex flex-col items-center justify-center">
+      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-8">
+        Loan Application
+      </h1>
+      <Card className="w-full max-w-2xl" {...props}>
+        <CardHeader>
+          <CardTitle>Applicant Details</CardTitle>
+          <CardDescription>
+            Please fill out the details below to submit your application.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
+                <Input
+                  id="fullName"
+                  type="text"
+                  value={form.fullName}
+                  onChange={handleChange}
+                  required
+                />
+              </Field>
+              <div className="grid grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel htmlFor="country">Country</FieldLabel>
+                  <Input
+                    id="country"
+                    type="text"
+                    value={form.country}
+                    onChange={handleChange}
+                    required
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="zipCode">Zip Code</FieldLabel>
+                  <Input
+                    id="zipCode"
+                    type="text"
+                    value={form.zipCode}
+                    onChange={handleChange}
+                    required
+                  />
+                </Field>
+              </div>
+              <Field>
+                <FieldLabel htmlFor="address">Address Line</FieldLabel>
+                <Input
+                  id="address"
+                  type="text"
+                  placeholder="Unit no. / Brgy. Name / Street Name / Village Name"
+                  value={form.address}
+                  onChange={handleChange}
+                  required
+                />
+                <FieldDescription>
+                  We&apos;ll use this for your billing information.
+                </FieldDescription>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="document">Document Upload</FieldLabel>
+                <Input
+                  id="document"
+                  type="file"
+                  accept="image/*,.pdf"
+                  required
+                  className="cursor-pointer"
+                />
+                <FieldDescription>
+                  Please upload a valid ID or required document.
+                </FieldDescription>
+              </Field>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
-
-          <FieldGroup>
-            <Field>
-              <input type="file" name="image" accept="image/*" required />
-              <button type="submit">Upload Image</button> 
-              <Button type="submit" disabled={loading}>
-                {loading ? "Creating account..." : "Create Account"}
-              </Button>
-              <Button variant="outline" type="button">
-                Sign up with Google
-              </Button>
-              <FieldDescription className="px-6 text-center">
-                Already have an account? <a href="#">Sign in</a>
-              </FieldDescription>
-            </Field>
-          </FieldGroup>
-        </FieldGroup>
-      </form>
-    </>
+              <Field className="pt-4">
+                <Button type="submit" className="w-full">
+                  Submit Application
+                </Button>
+              </Field>
+            </FieldGroup>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
