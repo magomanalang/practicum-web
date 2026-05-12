@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import DocumentDropDown from "./DocumentDropDown";
 
 export function ApplicationForm({
   ...props
@@ -25,11 +26,12 @@ export function ApplicationForm({
     country: "",
     zipCode: "",
     address: "",
+    document: "",
+    documentType: "",
   });
 
   function handleSubmit(e: React.FormEvent): void {
     e.preventDefault();
-    // TODO: Handle form submission later
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -98,6 +100,18 @@ export function ApplicationForm({
                 </FieldDescription>
               </Field>
               <Field>
+                <FieldLabel>Document Type</FieldLabel>
+                <DocumentDropDown
+                  value={form.documentType}
+                  onChange={(val) =>
+                    setForm((prev) => ({ ...prev, documentType: val }))
+                  }
+                />
+                <FieldDescription>
+                  Select the type of ID or document you are uploading.
+                </FieldDescription>
+              </Field>
+              <Field>
                 <FieldLabel htmlFor="document">Document Upload</FieldLabel>
                 <Input
                   id="document"
@@ -106,9 +120,6 @@ export function ApplicationForm({
                   required
                   className="cursor-pointer"
                 />
-                <FieldDescription>
-                  Please upload a valid ID or required document.
-                </FieldDescription>
               </Field>
 
               <Field className="pt-4">
