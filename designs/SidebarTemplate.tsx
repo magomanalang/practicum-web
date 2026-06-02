@@ -61,8 +61,8 @@ export function SidebarTemplate() {
           <span className="sr-only">Toggle Sidebar</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-75 sm:w-100">
-        <SheetHeader className="border-b pb-4">
+      <SheetContent side="left" className="w-75 sm:w-100 flex flex-col">
+        <SheetHeader className="border-b pb-4 shrink-0">
           <SheetTitle className="flex items-center gap-2">
             <Home className="h-5 w-5 text-blue-600" />
             <span>App Name</span>
@@ -71,24 +71,26 @@ export function SidebarTemplate() {
             Access various sections of the application.
           </SheetDescription>
         </SheetHeader>
-        <nav className="flex flex-col gap-2 mt-6">
-          <NavSection links={appLinks} />
+        <div className="flex-1 overflow-y-auto py-4 -mx-6 px-6">
+          <nav className="flex flex-col gap-2">
+            <NavSection links={appLinks} />
 
-          <div className="mt-4 mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t pt-4">
-            Employee
-          </div>
-          <NavSection links={approverLinks} />
+            <div className="mt-4 mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t pt-4">
+              Employee
+            </div>
+            <NavSection links={approverLinks} />
 
-          {isDev && (
-            <>
-              <div className="mt-4 mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t pt-4">
-                Dev / Admin
-              </div>
-              <NavSection links={devLinks} />
-            </>
-          )}
-        </nav>
-        <div className="absolute bottom-6 left-6 right-6 border-t pt-4">
+            {isDev && (
+              <>
+                <div className="mt-4 mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t pt-4">
+                  Dev / Admin
+                </div>
+                <NavSection links={devLinks} />
+              </>
+            )}
+          </nav>
+        </div>
+        <div className="shrink-0 border-t pt-4 mt-auto">
           <p className="text-xs text-muted-foreground text-center">
             Version 1.0.2
           </p>
