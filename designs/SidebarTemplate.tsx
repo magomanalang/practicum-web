@@ -8,7 +8,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { PanelLeftIcon, UserCircle, Home } from "lucide-react";
-import Link from "next/link";
 import { Database, GitMerge, LayoutList, ShieldCheck, Tag } from "lucide-react";
 import { NavSection } from "./NavSection";
 
