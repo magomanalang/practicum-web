@@ -26,7 +26,7 @@ export const appLinks = [
   { href: "/calculator", label: "Calculator", icon: UserCircle },
   { href: "/history", label: "History", icon: GitMerge },
   { href: "/promotions", label: "Promotions", icon: Tag },
-  { href: "/profile", label: "Roles", icon: ShieldCheck },
+  { href: "/profile", label: "Profile", icon: ShieldCheck },
   { href: "/settings", label: "Settings", icon: ShieldCheck },
 ];
 
