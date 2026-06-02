@@ -38,6 +38,11 @@ export const approverLinks = [
     label: "Analytics",
     icon: Database,
   },
+  {
+    href: "/approver/reports",
+    label: "Reports",
+    icon: Database,
+  },
 ];
 
 export const devLinks = [
