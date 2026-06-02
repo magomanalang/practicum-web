@@ -75,6 +75,10 @@ export function SidebarTemplate() {
           <nav className="flex flex-col gap-2">
             <NavSection links={appLinks} />
 
+          <div className="mt-4 mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t pt-4">
+            Employee
+          </div>
+          <NavSection links={approverLinks} />
             <div className="mt-4 mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t pt-4">
               Employee
             </div>
