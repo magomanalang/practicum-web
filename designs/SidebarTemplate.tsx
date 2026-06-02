@@ -64,7 +64,11 @@ export function SidebarTemplate() {
           <span className="sr-only">Toggle Sidebar</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-75 sm:w-100">
+      <SheetContent
+        side="left"
+        className="w-75 sm:w-100 max-h-screen overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {" "}
         <SheetHeader className="border-b pb-4">
           <SheetTitle className="flex items-center gap-2">
             <Home className="h-5 w-5 text-blue-600" />

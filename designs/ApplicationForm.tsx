@@ -86,7 +86,7 @@ export function ApplicationForm({
                 </Field>
               </div>
               <Field>
-                <FieldLabel htmlFor="address">Address Line</FieldLabel>
+                <FieldLabel htmlFor="address">Full Address</FieldLabel>
                 <Input
                   id="address"
                   type="text"
