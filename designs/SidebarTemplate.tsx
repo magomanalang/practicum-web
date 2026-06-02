@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/sheet";
 import {
   PanelLeftIcon,
-  LayoutDashboard,
-  Settings,
   UserCircle,
   Home,
 } from "lucide-react";
@@ -50,7 +48,6 @@ export const devLinks = [
 ];
 
 const isDev = process.env.NODE_ENV === "development";
-const isEmployee = process.env.NODE_ENV === "employee";
 
 export function SidebarTemplate() {
   return (
