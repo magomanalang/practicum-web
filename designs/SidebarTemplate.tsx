@@ -7,11 +7,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  PanelLeftIcon,
-  UserCircle,
-  Home,
-} from "lucide-react";
+import { PanelLeftIcon, UserCircle, Home } from "lucide-react";
 import Link from "next/link";
 import { Database, GitMerge, LayoutList, ShieldCheck, Tag } from "lucide-react";
 import { NavSection } from "./NavSection";
@@ -35,6 +31,11 @@ export const approverLinks = [
   {
     href: "/approver/applicationforms",
     label: "Approve/Reject Application Forms",
+    icon: Database,
+  },
+  {
+    href: "/approver/analytics",
+    label: "Analytics",
     icon: Database,
   },
 ];
