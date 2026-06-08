@@ -1,3 +1,5 @@
+import { UserLoanHistory } from "@/designs/HistoryTable";
+
 export default function Page() {
-  return <h1>HELLO</h1>;
+  return <UserLoanHistory />;
 }

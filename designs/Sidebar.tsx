@@ -12,17 +12,10 @@ import { Database, GitMerge, LayoutList, ShieldCheck, Tag } from "lucide-react";
 import { NavSection } from "./NavSection";
 
 export const appLinks = [
-  {
-    href: "/dev/sections",
-    label: "Manage Sections",
-    icon: LayoutList,
-  },
   { href: "/offers", label: "Offers", icon: Database },
-  { href: "/calculator", label: "Calculator", icon: UserCircle },
   { href: "/history", label: "History", icon: GitMerge },
   { href: "/promotions", label: "Promotions", icon: Tag },
   { href: "/profile", label: "Profile", icon: ShieldCheck },
-  { href: "/settings", label: "Settings", icon: ShieldCheck },
 ];
 
 export const approverLinks = [

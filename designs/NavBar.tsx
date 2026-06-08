@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SidebarTemplate } from "./SidebarTemplate";
+import { SidebarTemplate } from "./Sidebar";
 import { useSession } from "next-auth/react";
 
 export default function Navbar() {
@@ -33,7 +33,7 @@ export default function Navbar() {
             </Link>
 
             <a
-              href="#"
+              href="/history"
               className="text-sm font-medium hover:text-green-700 transition-colors"
             >
               History
