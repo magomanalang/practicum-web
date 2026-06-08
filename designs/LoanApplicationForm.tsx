@@ -17,12 +17,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import DocumentDropDown from "./DocumentDropDown";
+import LoanProductDropDown from "./LoanProductDropDown";
 
 export function LoanApplicationForm({
   ...props
 }: React.ComponentProps<typeof Card>) {
   const [form, setForm] = useState({
-
+    loanProduct: "",
+    country: "",
+    zipCode: "",
+    address: "",
+    document: "",
+    documentType: "",
   });
 
   function handleSubmit(e: React.FormEvent): void {
@@ -40,7 +46,7 @@ export function LoanApplicationForm({
       </h1>
       <Card className="w-full max-w-2xl" {...props}>
         <CardHeader>
-          <CardTitle>Applicant Details</CardTitle>
+          <CardTitle>Loan Details</CardTitle>
           <CardDescription>
             Please fill out the details below to submit your application.
           </CardDescription>
@@ -49,13 +55,12 @@ export function LoanApplicationForm({
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
+                <FieldLabel htmlFor="fullName">Loan Product</FieldLabel>
                 <Input
                   id="fullName"
                   type="text"
                   value={}
                   onChange={handleChange}
-                  required
                 />
               </Field>
               <div className="grid grid-cols-2 gap-4">
@@ -96,7 +101,7 @@ export function LoanApplicationForm({
               </Field>
               <Field>
                 <FieldLabel>Document Type</FieldLabel>
-                <DocumentDropDown
+                <LoanProductDropDown
                   value={}
                   onChange={(val) =>
                     setForm((prev) => ({ ...prev, documentType: val }))

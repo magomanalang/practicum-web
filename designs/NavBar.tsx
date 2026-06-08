@@ -40,10 +40,10 @@ export default function Navbar() {
             </a>
 
             <a
-              href="#"
+              href="/submission"
               className="text-sm font-medium hover:text-green-700 transition-colors"
             >
-              Calculator
+              Application
             </a>
           </div>
 

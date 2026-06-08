@@ -1,5 +1,5 @@
-import { ApplicationForm } from "@/designs/ApplicationForm";
+import { LoanApplicationForm } from "@/designs/LoanApplicationForm";
 
 export default async function Page() {
-  return <ApplicationForm />;
+  return <LoanApplicationForm />;
 }
