@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SidebarTemplate } from "./SidebarTemplate";
+import { SidebarTemplate } from "./Sidebar";
 import { useSession } from "next-auth/react";
 
 export default function Navbar() {
