@@ -33,7 +33,7 @@ export default function Navbar() {
             </Link>
 
             <a
-              href="#"
+              href="/history"
               className="text-sm font-medium hover:text-green-700 transition-colors"
             >
               History

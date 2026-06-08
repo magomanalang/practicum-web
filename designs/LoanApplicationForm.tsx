@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import DocumentDropDown from "./DocumentDropDown";
 import LoanProductDropDown from "./LoanProductDropDown";
 
 export function LoanApplicationForm({
@@ -24,11 +23,13 @@ export function LoanApplicationForm({
 }: React.ComponentProps<typeof Card>) {
   const [form, setForm] = useState({
     loanProduct: "",
-    country: "",
-    zipCode: "",
-    address: "",
-    document: "",
-    documentType: "",
+    interestRate: "",
+    minimumAmount: "",
+    maximumAmount: "",
+    minimumTerm: "",
+    maximumTerm: "",
+    proposalAmount: "",
+    proposalTerm: "",
   });
 
   function handleSubmit(e: React.FormEvent): void {
@@ -56,77 +57,13 @@ export function LoanApplicationForm({
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="fullName">Loan Product</FieldLabel>
-                <Input
-                  id="fullName"
-                  type="text"
-                  value={}
-                  onChange={handleChange}
-                />
               </Field>
-              <div className="grid grid-cols-2 gap-4">
-                <Field>
-                  <FieldLabel htmlFor="country">Country</FieldLabel>
-                  <Input
-                    id="country"
-                    type="text"
-                    value={}
-                    onChange={handleChange}
-                    required
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="zipCode">Zip Code</FieldLabel>
-                  <Input
-                    id="zipCode"
-                    type="text"
-                    value={}
-                    onChange={handleChange}
-                    required
-                  />
-                </Field>
-              </div>
-              <Field>
-                <FieldLabel htmlFor="address">Full Address</FieldLabel>
-                <Input
-                  id="address"
-                  type="text"
-                  placeholder="Unit no. / Brgy. Name / Street Name / Village Name"
-                  value={}
-                  onChange={handleChange}
-                  required
-                />
-                <FieldDescription>
-                  We&apos;ll use this for your billing information.
-                </FieldDescription>
-              </Field>
-              <Field>
-                <FieldLabel>Document Type</FieldLabel>
-                <LoanProductDropDown
-                  value={}
-                  onChange={(val) =>
-                    setForm((prev) => ({ ...prev, documentType: val }))
-                  }
-                />
-                <FieldDescription>
-                  Select the type of ID or document you are uploading.
-                </FieldDescription>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="document">Document Upload</FieldLabel>
-                <Input
-                  id="document"
-                  type="file"
-                  accept="image/*,.pdf"
-                  required
-                  className="cursor-pointer"
-                />
-              </Field>
-
-              <Field className="pt-4">
-                <Button type="submit" className="w-full">
-                  Submit Application
-                </Button>
-              </Field>
+              <LoanProductDropDown
+                value={form.loanProduct}
+                onChange={(val) =>
+                  setForm((prev) => ({ ...prev, documentType: val }))
+                }
+              />
             </FieldGroup>
           </form>
         </CardContent>

@@ -96,7 +96,7 @@ export function ApplicationForm({
                   required
                 />
                 <FieldDescription>
-                  We&apos;ll use this for your billing information.
+                  We&apos;ll use this for your personal information.
                 </FieldDescription>
               </Field>
               <Field>
