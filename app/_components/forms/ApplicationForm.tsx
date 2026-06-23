@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import DocumentDropDown from "../dropdowns/DocumentDropDown";
 import CustomerListDropDown from "../dropdowns/CustomerListDropDown";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export function ApplicationForm({
   ...props
@@ -31,7 +31,7 @@ export function ApplicationForm({
     fullName: "",
     country: "",
     zipCode: "",
-    address: "",
+    addressLine: "",
     document: "",
     documentType: "",
   });
@@ -39,22 +39,36 @@ export function ApplicationForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-
     setLoading(true);
+
+    // Grab the actual file instance from the DOM input element
+    const fileInput = document.getElementById("document") as HTMLInputElement;
+    const file = fileInput?.files?.[0];
+
+    if (!file) {
+      setError("Please upload a file.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch("/api/auth/signup", {
+      const formData = new FormData();
+      formData.append("customerId", form.customerId);
+      formData.append("fullName", form.fullName);
+      formData.append("country", form.country);
+      formData.append("zipCode", form.zipCode);
+      formData.append("addressLine", form.addressLine);
+      formData.append("documentType", form.documentType);
+      const file = (document.getElementById("document") as HTMLInputElement)
+        ?.files?.[0];
+      if (file) {
+        formData.append("documentFile", file);
+      }
+      const res = await fetch("/api/auth/document-submission", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerId: form.customerId,
-          fullName: form.fullName,
-          country: form.country,
-          zipCode: form.zipCode,
-          address: form.address,
-          documentType: form.documentType,
-          document: form.document,
-        }),
+        body: formData,
       });
+      formData.append("SubmittedBy", "Web_Client_User");
 
       if (!res.ok) {
         const data = await res.json();
@@ -69,7 +83,6 @@ export function ApplicationForm({
       setLoading(false);
     }
   }
-
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   }
@@ -135,10 +148,10 @@ export function ApplicationForm({
               <Field>
                 <FieldLabel htmlFor="address">Full Address</FieldLabel>
                 <Input
-                  id="address"
+                  id="addressLine"
                   type="text"
                   placeholder="Unit no. / Brgy. Name / Street Name / Village Name"
-                  value={form.address}
+                  value={form.addressLine}
                   onChange={handleChange}
                   required
                 />
@@ -169,11 +182,7 @@ export function ApplicationForm({
                 />
               </Field>
               <Field className="pt-4">
-                <Button
-                  type="submit"
-                  className="w-full"
-                  onClick={submitDocumentForm(form)}
-                >
+                <Button type="submit" className="w-full">
                   Submit Application
                 </Button>
               </Field>
