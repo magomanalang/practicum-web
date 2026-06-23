@@ -21,7 +21,8 @@ import {
 
 interface Customers {
   id: string | number;
-  name: string;
+  firstName: string;
+  lastName: string;
 }
 
 interface CustomerDropDownProps {
@@ -33,16 +34,16 @@ export default function CustomerListDropDown({
   onChange,
 }: CustomerDropDownProps) {
   const [open, setOpen] = React.useState(false);
-  const [products, setProducts] = React.useState<Customers[]>([]);
+  const [customers, setCustomers] = React.useState<Customers[]>([]);
   const [loading, isLoading] = React.useState(true);
 
   React.useEffect(() => {
-    async function fetchProducts() {
+    async function fetchCustomers() {
       try {
-        const res = await fetch("/api/loan-products");
+        const res = await fetch("/api/customers");
         if (res.ok) {
           const data = await res.json();
-          setProducts(data);
+          setCustomers(data);
         }
       } catch {
         console.error("Failed to Fetch existing Loan Products");
@@ -50,8 +51,12 @@ export default function CustomerListDropDown({
         isLoading(false);
       }
     }
-    fetchProducts();
+    fetchCustomers();
   }, []);
+
+  const getCustomerFullName = (customer: Customers) => {
+    return `${customer.firstName} ${customer.lastName}`.trim();
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -65,43 +70,50 @@ export default function CustomerListDropDown({
         >
           {loading ? (
             <span className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" /> Loading products...
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading customers...
             </span>
           ) : value ? (
-            products.find((p) => String(p.id) === value)?.name ||
-            "Select Loan Product..."
+            (() => {
+              const selected = customers.find((p) => String(p.id) === value);
+              return selected
+                ? getCustomerFullName(selected)
+                : "Select Assigned Customers...";
+            })()
           ) : (
-            "Select Loan Product..."
+            "Select Assigned Customers..."
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 min-w-50">
         <Command>
-          <CommandInput placeholder="Search loan product..." />
+          <CommandInput placeholder="Search customers..." />
           <CommandList>
-            <CommandEmpty>No Loan Product Found</CommandEmpty>
+            <CommandEmpty>No Customers Found</CommandEmpty>
             <CommandGroup>
-              {products.map((product) => (
-                <CommandItem
-                  key={product.id}
-                  value={product.name}
-                  onSelect={() => {
-                    onChange(String(product.id));
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === String(product.id)
-                        ? "opacity-100"
-                        : "opacity-0",
-                    )}
-                  />
-                  {product.name}
-                </CommandItem>
-              ))}
+              {customers.map((customer) => {
+                const fullName = getCustomerFullName(customer);
+                return (
+                  <CommandItem
+                    key={customer.id}
+                    value={fullName}
+                    onSelect={() => {
+                      onChange(String(customer.id));
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === String(customer.id)
+                          ? "opacity-100"
+                          : "opacity-0",
+                      )}
+                    />
+                    {fullName}
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           </CommandList>
         </Command>

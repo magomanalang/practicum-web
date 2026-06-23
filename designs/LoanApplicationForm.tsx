@@ -12,6 +12,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import LoanProductDropDown from "./LoanProductDropDown";
+import CustomerListDropDown from "./CustomerListDropDown";
 
 export function LoanApplicationForm({
   ...props
@@ -52,6 +53,13 @@ export function LoanApplicationForm({
                 <FieldLabel htmlFor="fullName">Loan Product</FieldLabel>
               </Field>
 
+              {/* REMINDER TO CHANGE */}
+              <CustomerListDropDown
+                value={form.customerId}
+                onChange={(val) =>
+                  setForm((prev) => ({ ...prev, documentType: val }))
+                }
+              />
               <LoanProductDropDown
                 value={form.loanProduct}
                 onChange={(val) =>
