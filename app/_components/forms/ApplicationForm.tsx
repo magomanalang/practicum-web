@@ -41,7 +41,6 @@ export function ApplicationForm({
     setError(null);
     setLoading(true);
 
-    // Grab the actual file instance from the DOM input element
     const fileInput = document.getElementById("document") as HTMLInputElement;
     const file = fileInput?.files?.[0];
 
@@ -53,22 +52,19 @@ export function ApplicationForm({
 
     try {
       const formData = new FormData();
-      formData.append("customerId", form.customerId);
-      formData.append("fullName", form.fullName);
-      formData.append("country", form.country);
-      formData.append("zipCode", form.zipCode);
-      formData.append("addressLine", form.addressLine);
-      formData.append("documentType", form.documentType);
-      const file = (document.getElementById("document") as HTMLInputElement)
-        ?.files?.[0];
-      if (file) {
-        formData.append("documentFile", file);
-      }
+      formData.append("CustomerId", form.customerId);
+      formData.append("FullName", form.fullName);
+      formData.append("Country", form.country);
+      formData.append("ZipCode", form.zipCode);
+      formData.append("AddressLine", form.addressLine);
+      formData.append("DocumentType", form.documentType);
+      formData.append("SubmittedBy", "Web_Client_User");
+      formData.append("DocumentFile", file);
+
       const res = await fetch("/api/auth/document-submission", {
         method: "POST",
         body: formData,
       });
-      formData.append("SubmittedBy", "Web_Client_User");
 
       if (!res.ok) {
         const data = await res.json();
@@ -83,6 +79,7 @@ export function ApplicationForm({
       setLoading(false);
     }
   }
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   }
@@ -146,7 +143,7 @@ export function ApplicationForm({
                 </Field>
               </div>
               <Field>
-                <FieldLabel htmlFor="address">Full Address</FieldLabel>
+                <FieldLabel htmlFor="addressLine">Full Address</FieldLabel>
                 <Input
                   id="addressLine"
                   type="text"
