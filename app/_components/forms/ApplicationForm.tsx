@@ -8,17 +8,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import DocumentDropDown from "../dropdowns/DocumentDropDown";
 import CustomerListDropDown from "../dropdowns/CustomerListDropDown";
 import { useRouter } from "next/navigation";
+
+type FormState = {
+  customerId: string;
+  fullName: string;
+  country: string;
+  zipCode: string;
+  addressLine: string;
+  documentType: string;
+  documentImagePath: string;
+  submittedBy: string;
+};
+
+const INITIAL_STATE: FormState = {
+  customerId: "",
+  fullName: "",
+  country: "",
+  zipCode: "",
+  addressLine: "",
+  documentType: "",
+  documentImagePath: "",
+  submittedBy: "System",
+};
 
 export function ApplicationForm({
   ...props
@@ -27,17 +44,9 @@ export function ApplicationForm({
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    customerId: "",
-    fullName: "",
-    country: "",
-    zipCode: "",
-    addressLine: "",
-    documentType: "",
-    documentPath: "", // Changed from file to a simple string
-  });
+  const [form, setForm] = useState<FormState>(INITIAL_STATE);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -46,40 +55,50 @@ export function ApplicationForm({
       const numericCustomerId =
         form.customerId.trim() === "" ? "0" : form.customerId;
 
-      // JSON payload configuration
       const payload = {
         CustomerId: parseInt(numericCustomerId, 10),
-        FullName: form.fullName,
-        Country: form.country,
-        ZipCode: form.zipCode,
-        AddressLine: form.addressLine,
+        FullName: form.fullName.trim(),
+        Country: form.country.trim(),
+        ZipCode: form.zipCode.trim(),
+        AddressLine: form.addressLine.trim(),
         DocumentType: form.documentType,
-        SubmittedBy: "Web_Client_User",
-        DocumentImagePath: form.documentPath, // Plain string
+        DocumentImagePath: form.documentImagePath.trim(),
+        submittedBy: form.submittedBy,
       };
 
-      const res = await fetch("/api/auth/document-submission", {
+      const res = await fetch("/api/document-submission", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        setError(data.message ?? "Something went wrong.");
-        return;
+        const contentType = res.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+          const data = await res.json();
+          throw new Error(data.message ?? "Something went wrong.");
+        } else {
+          const textError = await res.text();
+          throw new Error(
+            textError || `Server returned status code ${res.status}`,
+          );
+        }
       }
 
       router.push("/submission");
-    } catch {
-      setError("Could not reach the server. Please try again.");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not reach the server.",
+      );
     } finally {
       setLoading(false);
     }
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+    const { id, value } = e.target;
+    setForm((prev) => ({ ...prev, [id]: value }));
   }
 
   return (
@@ -124,6 +143,7 @@ export function ApplicationForm({
                   required
                 />
               </Field>
+
               <div className="grid grid-cols-2 gap-4">
                 <Field>
                   <FieldLabel htmlFor="country">Country</FieldLabel>
@@ -146,6 +166,7 @@ export function ApplicationForm({
                   />
                 </Field>
               </div>
+
               <Field>
                 <FieldLabel htmlFor="addressLine">Full Address</FieldLabel>
                 <Input
@@ -157,6 +178,7 @@ export function ApplicationForm({
                   required
                 />
               </Field>
+
               <Field>
                 <FieldLabel>Document Type</FieldLabel>
                 <DocumentDropDown
@@ -167,16 +189,15 @@ export function ApplicationForm({
                 />
               </Field>
 
-              {/* Plain text input for the document identifier/path string */}
               <Field>
-                <FieldLabel htmlFor="documentPath">
+                <FieldLabel htmlFor="documentImagePath">
                   Document Path Reference
                 </FieldLabel>
                 <Input
-                  id="documentPath"
+                  id="documentImagePath"
                   type="text"
                   placeholder="e.g., /uploads/passport_placeholder.png"
-                  value={form.documentPath}
+                  value={form.documentImagePath}
                   onChange={handleChange}
                   required
                 />
