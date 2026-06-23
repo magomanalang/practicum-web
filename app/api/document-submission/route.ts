@@ -4,19 +4,47 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    console.log("Received data:", body);
+    const backendUrl = `${process.env.API_URL}/api/Kyc/documents`;
+
+    const dotNetResponse = await fetch(backendUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        CustomerId: body.CustomerId,
+        FullName: body.FullName,
+        DocumentType: body.DocumentType,
+        Country: body.Country,
+        ZipCode: body.ZipCode,
+        AddressLine: body.AddressLine,
+        DocumentImagePath: body.DocumentImagePath,
+        SubmittedBy: body.submittedBy ?? "System",
+      }),
+    });
+
+    if (!dotNetResponse.ok) {
+      console.error(".NET Backend Error status:", dotNetResponse.status);
+      return NextResponse.json(
+        { message: "The backend server rejected the application details." },
+        { status: dotNetResponse.status },
+      );
+    }
+
+    const resultData = await dotNetResponse.json();
 
     return NextResponse.json(
       {
-        message: "Data received successfully!",
-        receivedData: body,
+        message: "Data successfully saved!",
+        data: resultData,
       },
-      { status: 200 },
+      { status: 201 },
     );
-  } catch {
+  } catch (e) {
+    console.error("Proxy error:", e);
     return NextResponse.json(
-      { message: "Invalid JSON format or bad request." },
-      { status: 400 },
+      { message: "Backend unreachable" },
+      { status: 502 },
     );
   }
 }

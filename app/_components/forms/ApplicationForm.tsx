@@ -86,7 +86,7 @@ export function ApplicationForm({
         }
       }
 
-      router.push("/submission");
+      router.push("/dashboard");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Could not reach the server.",
