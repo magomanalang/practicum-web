@@ -55,7 +55,7 @@ export default function Navbar() {
             </Link>
             <Link href="/signup">
               <button className="rounded-lg bg-green-950 px-4 py-2 text-sm font-medium text-white hover:bg-green-900 transition-all">
-                Get Started
+                Register Customer
               </button>
             </Link>
           </div>
