@@ -7,9 +7,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { NavSection } from "@/designs/NavSection";
 import { PanelLeftIcon, UserCircle, Home, Calculator } from "lucide-react";
 import { Database, GitMerge, LayoutList, ShieldCheck, Tag } from "lucide-react";
-import { NavSection } from "./NavSection";
 
 export const appLinks = [
   { href: "/offers", label: "Offers", icon: Database },

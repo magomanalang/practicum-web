@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { SidebarTemplate } from "./Sidebar";
 import { useSession } from "next-auth/react";
+import { SidebarTemplate } from "./Sidebar";
 
 export default function Navbar() {
   useSession();
@@ -53,7 +53,7 @@ export default function Navbar() {
                 Log In
               </button>
             </Link>
-            <Link href="/signup">
+            <Link href="/_components/">
               <button className="rounded-lg bg-green-950 px-4 py-2 text-sm font-medium text-white hover:bg-green-900 transition-all">
                 Register Customer
               </button>
