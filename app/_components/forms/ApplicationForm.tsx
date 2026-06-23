@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import DocumentDropDown from "./DocumentDropDown";
+import DocumentDropDown from "../dropdowns/DocumentDropDown";
 
 export function ApplicationForm({
   ...props

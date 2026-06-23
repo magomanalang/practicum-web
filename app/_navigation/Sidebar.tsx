@@ -7,7 +7,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { NavSection } from "@/designs/NavSection";
+import { NavSection } from "@/app/_navigation/NavSection";
 import { PanelLeftIcon, UserCircle, Home, Calculator } from "lucide-react";
 import { Database, GitMerge, LayoutList, ShieldCheck, Tag } from "lucide-react";
 

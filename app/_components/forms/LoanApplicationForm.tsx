@@ -11,8 +11,8 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import LoanProductDropDown from "./LoanProductDropDown";
-import CustomerListDropDown from "./CustomerListDropDown";
+import LoanProductDropDown from "../dropdowns/LoanProductDropDown";
+import CustomerListDropDown from "../dropdowns/CustomerListDropDown";
 
 export function LoanApplicationForm({
   ...props

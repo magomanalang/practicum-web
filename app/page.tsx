@@ -1,7 +1,7 @@
-import { AreaChartAnalytics } from "@/designs/AreaChart";
-import { LineChartAnalytics } from "@/designs/LineChart";
-import { PieChartAnalytics } from "@/designs/PieChart";
-import { RadarChartAnalytics } from "@/designs/RadarChart";
+import { AreaChartAnalytics } from "@/app/_components/charts/AreaChart";
+import { LineChartAnalytics } from "@/app/_components/charts/LineChart";
+import { PieChartAnalytics } from "@/app/_components/charts/PieChart";
+import { RadarChartAnalytics } from "@/app/_components/charts/RadarChart";
 
 export default function Home() {
   return (
