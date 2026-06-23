@@ -45,7 +45,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          id: 0,
           firstName: form.firstName,
           middleName: form.middleName,
           lastName: form.lastName,
@@ -60,7 +59,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         return;
       }
 
-      router.push("/dashboard");
+      router.push("/submission");
     } catch {
       setError("Could not reach the server. Please try again.");
     } finally {

@@ -17,11 +17,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import DocumentDropDown from "../dropdowns/DocumentDropDown";
+import CustomerListDropDown from "../dropdowns/CustomerListDropDown";
+import { useRouter } from "next/router";
 
 export function ApplicationForm({
   ...props
 }: React.ComponentProps<typeof Card>) {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
+    customerId: "",
     fullName: "",
     country: "",
     zipCode: "",
@@ -30,8 +36,38 @@ export function ApplicationForm({
     documentType: "",
   });
 
-  function handleSubmit(e: React.FormEvent): void {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerId: form.customerId,
+          fullName: form.fullName,
+          country: form.country,
+          zipCode: form.zipCode,
+          address: form.address,
+          documentType: form.documentType,
+          document: form.document,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.message ?? "Something went wrong.");
+        return;
+      }
+
+      router.push("/submission");
+    } catch {
+      setError("Could not reach the server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -53,6 +89,17 @@ export function ApplicationForm({
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
+              <CustomerListDropDown
+                value={form.customerId}
+                onChange={(selectedId, selectedFullName) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    customerId: selectedId,
+                    fullName: selectedFullName,
+                  }))
+                }
+              />
+
               <Field>
                 <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
                 <Input
@@ -121,9 +168,12 @@ export function ApplicationForm({
                   className="cursor-pointer"
                 />
               </Field>
-
               <Field className="pt-4">
-                <Button type="submit" className="w-full">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  onClick={submitDocumentForm(form)}
+                >
                   Submit Application
                 </Button>
               </Field>

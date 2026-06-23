@@ -27,7 +27,7 @@ interface Customers {
 
 interface CustomerDropDownProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (id: string, fullName: string) => void;
 }
 export default function CustomerListDropDown({
   value,
@@ -98,7 +98,7 @@ export default function CustomerListDropDown({
                     key={customer.id}
                     value={fullName}
                     onSelect={() => {
-                      onChange(String(customer.id));
+                      onChange(String(customer.id), fullName);
                       setOpen(false);
                     }}
                   >
