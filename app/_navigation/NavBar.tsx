@@ -53,7 +53,7 @@ export default function Navbar() {
                 Log In
               </button>
             </Link>
-            <Link href="/_components/">
+            <Link href="/signup">
               <button className="rounded-lg bg-green-950 px-4 py-2 text-sm font-medium text-white hover:bg-green-900 transition-all">
                 Register Customer
               </button>

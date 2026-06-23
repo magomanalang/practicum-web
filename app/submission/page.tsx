@@ -1,4 +1,4 @@
-import { ApplicationForm } from "@/designs/ApplicationForm";
+import { ApplicationForm } from "../_components/forms/ApplicationForm";
 
 export default function Page() {
   return <ApplicationForm />;
