@@ -16,6 +16,7 @@ export const appLinks = [
   { href: "/promotions", label: "Promotions", icon: Tag },
   { href: "/profile", label: "Profile", icon: ShieldCheck },
   { href: "/calculator", label: "Loan Calculator", icon: Calculator },
+  { href: "/customers", label: "Customers", icon: UserCircle },
 ];
 
 export const approverLinks = [
