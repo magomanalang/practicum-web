@@ -24,6 +24,7 @@ export function ApplicationForm({
   ...props
 }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
+
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -32,8 +33,8 @@ export function ApplicationForm({
     country: "",
     zipCode: "",
     addressLine: "",
-    document: "",
     documentType: "",
+    documentPath: "", // Changed from file to a simple string
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -41,29 +42,26 @@ export function ApplicationForm({
     setError(null);
     setLoading(true);
 
-    const fileInput = document.getElementById("document") as HTMLInputElement;
-    const file = fileInput?.files?.[0];
-
-    if (!file) {
-      setError("Please upload a file.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const formData = new FormData();
-      formData.append("CustomerId", form.customerId);
-      formData.append("FullName", form.fullName);
-      formData.append("Country", form.country);
-      formData.append("ZipCode", form.zipCode);
-      formData.append("AddressLine", form.addressLine);
-      formData.append("DocumentType", form.documentType);
-      formData.append("SubmittedBy", "Web_Client_User");
-      formData.append("DocumentFile", file);
+      const numericCustomerId =
+        form.customerId.trim() === "" ? "0" : form.customerId;
+
+      // JSON payload configuration
+      const payload = {
+        CustomerId: parseInt(numericCustomerId, 10),
+        FullName: form.fullName,
+        Country: form.country,
+        ZipCode: form.zipCode,
+        AddressLine: form.addressLine,
+        DocumentType: form.documentType,
+        SubmittedBy: "Web_Client_User",
+        DocumentImagePath: form.documentPath, // Plain string
+      };
 
       const res = await fetch("/api/auth/document-submission", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -99,6 +97,12 @@ export function ApplicationForm({
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
+              {error && (
+                <div className="p-3 text-sm font-medium text-red-500 bg-red-50 dark:bg-red-950/30 rounded-md border border-red-200 dark:border-red-900/50">
+                  {error}
+                </div>
+              )}
+
               <CustomerListDropDown
                 value={form.customerId}
                 onChange={(selectedId, selectedFullName) =>
@@ -152,9 +156,6 @@ export function ApplicationForm({
                   onChange={handleChange}
                   required
                 />
-                <FieldDescription>
-                  We&apos;ll use this for your personal information.
-                </FieldDescription>
               </Field>
               <Field>
                 <FieldLabel>Document Type</FieldLabel>
@@ -164,23 +165,26 @@ export function ApplicationForm({
                     setForm((prev) => ({ ...prev, documentType: val }))
                   }
                 />
-                <FieldDescription>
-                  Select the type of ID or document you are uploading.
-                </FieldDescription>
               </Field>
+
+              {/* Plain text input for the document identifier/path string */}
               <Field>
-                <FieldLabel htmlFor="document">Document Upload</FieldLabel>
+                <FieldLabel htmlFor="documentPath">
+                  Document Path Reference
+                </FieldLabel>
                 <Input
-                  id="document"
-                  type="file"
-                  accept="image/*,.pdf"
+                  id="documentPath"
+                  type="text"
+                  placeholder="e.g., /uploads/passport_placeholder.png"
+                  value={form.documentPath}
+                  onChange={handleChange}
                   required
-                  className="cursor-pointer"
                 />
               </Field>
+
               <Field className="pt-4">
-                <Button type="submit" className="w-full">
-                  Submit Application
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? "Submitting..." : "Submit Application"}
                 </Button>
               </Field>
             </FieldGroup>
