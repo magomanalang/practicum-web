@@ -1,3 +1,5 @@
+"use client";
+
 import { EmployeeRoles } from "@/app/_constants/employeeRoles";
 import {
   Card,
@@ -11,31 +13,65 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import EmployeeRolesDropDown from "../dropdowns/EmployeeRolesDropDown";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface FormState {
-  Id: string;
-  FirstName: string;
-  MiddleName: string;
-  LastName: string;
-  Suffix: string;
-  Email: string;
-  EmployeeRoles: EmployeeRoles[];
+  id: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  suffix: string;
+  email: string;
+  employeeRoles: EmployeeRoles[];
 }
 
 export function EmployeeApplicationForm({
   ...props
 }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState<FormState>({
-    Id: "",
-    FirstName: "",
-    MiddleName: "",
-    LastName: "",
-    Suffix: "",
-    Email: "",
-    EmployeeRoles: [],
+    id: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    suffix: "",
+    email: "",
+    employeeRoles: [],
   });
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/add-employee-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: form.firstName,
+          middleName: form.middleName,
+          lastName: form.lastName,
+          suffix: form.suffix,
+          email: form.email,
+          employeeRoles: form.employeeRoles,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.message ?? "Something went wrong.");
+        return;
+      }
+    } catch {
+      setError("Could not reach the server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     const stateKey = (id.charAt(0).toUpperCase() +
@@ -50,11 +86,10 @@ export function EmployeeApplicationForm({
   const handleRoleChange = (selectedRole: string) => {
     const role = selectedRole as EmployeeRoles;
     setForm((prev) => {
-      // Avoid duplicate selections if they select it again
-      if (prev.EmployeeRoles.includes(role)) return prev;
+      if (prev.employeeRoles.includes(role)) return prev;
       return {
         ...prev,
-        EmployeeRoles: [...prev.EmployeeRoles, role],
+        EmployeeRoles: [...prev.employeeRoles, role],
       };
     });
   };
@@ -73,7 +108,7 @@ export function EmployeeApplicationForm({
             <Input
               id="firstName"
               type="text"
-              value={form.FirstName}
+              value={form.firstName}
               onChange={handleInputChange}
               required
             />
@@ -81,7 +116,7 @@ export function EmployeeApplicationForm({
             <Input
               id="middleName"
               type="text"
-              value={form.MiddleName}
+              value={form.middleName}
               onChange={handleInputChange}
               required
             />
@@ -89,7 +124,7 @@ export function EmployeeApplicationForm({
             <Input
               id="lastName"
               type="text"
-              value={form.LastName}
+              value={form.lastName}
               onChange={handleInputChange}
               required
             />
@@ -97,7 +132,7 @@ export function EmployeeApplicationForm({
             <Input
               id="suffix"
               type="text"
-              value={form.Suffix}
+              value={form.suffix}
               onChange={handleInputChange}
               required
             />
@@ -105,19 +140,29 @@ export function EmployeeApplicationForm({
             <Input
               id="email"
               type="text"
-              value={form.Email}
+              value={form.email}
               onChange={handleInputChange}
               required
             />
             <EmployeeRolesDropDown
-              value={form.EmployeeRoles[form.EmployeeRoles.length - 1] || ""}
+              value={form.employeeRoles[form.employeeRoles.length - 1] || ""}
               onChange={handleRoleChange}
             />
-            {form.EmployeeRoles.length > 0 && (
+            {form.employeeRoles.length > 0 && (
               <div className="mt-2 text-xs text-muted-foreground">
-                <strong>Selected:</strong> {form.EmployeeRoles.join(", ")}
+                <strong>Selected:</strong> {form.employeeRoles.join(", ")}
               </div>
             )}
+
+            <Button
+              variant="outline"
+              type="submit"
+              className="w-full"
+              disabled={false}
+              onClick={handleSubmit}
+            >
+              Submit For Approval
+            </Button>
           </Field>
         </FieldGroup>
       </CardContent>

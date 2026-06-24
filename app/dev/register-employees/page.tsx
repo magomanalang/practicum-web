@@ -3,5 +3,11 @@
 import { EmployeeApplicationForm } from "@/app/_components/forms/EmployeeApplicationForm";
 
 export default function Page() {
-  return <EmployeeApplicationForm />;
+  return (
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm">
+        <EmployeeApplicationForm />
+      </div>
+    </div>
+  );
 }
