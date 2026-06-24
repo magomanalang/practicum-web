@@ -31,6 +31,7 @@ export function EmployeeApplicationForm({
   const router = useRouter();
   const { data: session } = useSession();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState<FormState>({
@@ -42,6 +43,7 @@ export function EmployeeApplicationForm({
   });
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSuccess(null);
     setError(null);
     setLoading(true);
     const backendNumericRoles = form.employeeRoles.map(
@@ -80,6 +82,15 @@ export function EmployeeApplicationForm({
         setError(data.message ?? "Something went wrong.");
         return;
       }
+
+      setSuccess("Employee request submitted successfully for approval!");
+      setForm({
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        suffix: "",
+        employeeRoles: [],
+      });
     } catch {
       setError("Could not reach the server. Please try again.");
     } finally {
@@ -113,6 +124,16 @@ export function EmployeeApplicationForm({
       <CardContent>
         <form onSubmit={handleSubmit}>
           <FieldGroup>
+            {success && (
+              <div className="p-3 text-sm font-medium text-green-600 bg-green-50 dark:bg-green-950/30 rounded-md border border-green-200 dark:border-green-900/50">
+                {success}
+              </div>
+            )}
+            {error && (
+              <div className="p-3 text-sm font-medium text-red-500 bg-red-50 dark:bg-red-950/30 rounded-md border border-red-200 dark:border-red-900/50">
+                {error}
+              </div>
+            )}
             <Field>
               <FieldLabel htmlFor="firstName">First Name</FieldLabel>
               <Input
