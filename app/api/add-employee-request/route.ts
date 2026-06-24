@@ -23,8 +23,6 @@ export async function POST(request: Request) {
         RequestType: body.RequestType,
         CreatedBy: body.CreatedBy,
         CreatedDateTime: body.CreatedDateTime,
-        ApprovedBy: body.ApprovedBy,
-        ApprovedDateTime: body.ApprovedDateTime,
       }),
     });
 
