@@ -28,7 +28,6 @@ interface FormState {
 export function EmployeeApplicationForm({
   ...props
 }: React.ComponentProps<typeof Card>) {
-  const router = useRouter();
   const { data: session } = useSession();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
