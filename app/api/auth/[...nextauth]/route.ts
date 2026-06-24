@@ -27,9 +27,12 @@ const handler = NextAuth({
             },
           );
 
+          if (!res.ok) {
+            console.error(`Backend returned status code: ${res.status}`);
+            return null;
+          }
           const user = await res.json();
-
-          if (res.ok && user) {
+          if (user) {
             return user;
           }
           return null;
@@ -40,6 +43,7 @@ const handler = NextAuth({
       },
     }),
   ],
+
   pages: {
     signIn: "/login",
   },
