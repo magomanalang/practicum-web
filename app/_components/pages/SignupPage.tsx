@@ -1,5 +1,6 @@
 "use client";
 
+import { toFormattedDate } from "@/app/_helpers/FormattedDate";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,9 +27,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     lastName: "",
     middleName: "",
     firstName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    suffix: "",
+    dateOfBirth: "",
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -39,15 +39,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     e.preventDefault();
     setError(null);
 
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-    if (form.password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-
     setLoading(true);
     try {
       const res = await fetch("/api/auth/signup", {
@@ -57,8 +48,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           firstName: form.firstName,
           middleName: form.middleName,
           lastName: form.lastName,
-          email: form.email,
-          password: form.password,
+          suffix: form.suffix,
+          dateOfBirth: toFormattedDate(form.dateOfBirth),
         }),
       });
 
@@ -68,7 +59,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         return;
       }
 
-      router.push("/dashboard"); // redirect on success
+      router.push("/submission");
     } catch {
       setError("Could not reach the server. Please try again.");
     } finally {
@@ -78,9 +69,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   return (
     <Card {...props}>
       <CardHeader>
-        <CardTitle>Create an account</CardTitle>
+        <CardTitle>Register Customer</CardTitle>
         <CardDescription>
-          Enter your information below to create your account
+          Enter Customer information and credentials below
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -116,12 +107,21 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <FieldLabel htmlFor="suffix">Suffix</FieldLabel>
               <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                value={form.email}
+                id="suffix"
+                type="text"
+                value={form.suffix}
+                onChange={handleChange}
+              />
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="email">Date Of Birth</FieldLabel>
+              <Input
+                id="dateOfBirth"
+                type="date"
+                placeholder="01/01/2000"
+                value={form.dateOfBirth}
                 onChange={handleChange}
                 required
               />
@@ -129,45 +129,13 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 We&apos;ll use this to contact you.
               </FieldDescription>
             </Field>
-            <Field>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input
-                id="password"
-                type="password"
-                value={form.password}
-                onChange={handleChange}
-                required
-              />
-              <FieldDescription>
-                Must be at least 8 characters long.
-              </FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel htmlFor="confirmPassword">
-                Confirm Password
-              </FieldLabel>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={form.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-            </Field>
-
             {error && <p className="text-sm text-red-500">{error}</p>}
 
             <FieldGroup>
               <Field>
                 <Button type="submit" disabled={loading}>
-                  {loading ? "Creating account..." : "Create Account"}
+                  {loading ? "Creating customer..." : "Create Customer"}
                 </Button>
-                <Button variant="outline" type="button">
-                  Sign up with Google
-                </Button>
-                <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="#">Sign in</a>
-                </FieldDescription>
               </Field>
             </FieldGroup>
           </FieldGroup>

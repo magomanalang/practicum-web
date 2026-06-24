@@ -7,15 +7,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { PanelLeftIcon, UserCircle, Home } from "lucide-react";
+import { NavSection } from "@/app/_navigation/NavSection";
+import { PanelLeftIcon, UserCircle, Home, Calculator } from "lucide-react";
 import { Database, GitMerge, LayoutList, ShieldCheck, Tag } from "lucide-react";
-import { NavSection } from "./NavSection";
 
 export const appLinks = [
   { href: "/offers", label: "Offers", icon: Database },
-  { href: "/history", label: "History", icon: GitMerge },
   { href: "/promotions", label: "Promotions", icon: Tag },
   { href: "/profile", label: "Profile", icon: ShieldCheck },
+  { href: "/calculator", label: "Loan Calculator", icon: Calculator },
+  { href: "/customers", label: "Customers", icon: UserCircle },
 ];
 
 export const approverLinks = [
@@ -37,12 +38,33 @@ export const approverLinks = [
   },
 ];
 
-export const devLinks = [
-  { href: "/dev/sections", label: "Manage Sections", icon: LayoutList },
-  { href: "/dev/cruds", label: "CRUD Builder", icon: Database },
-  { href: "/dev/roles", label: "Roles", icon: ShieldCheck },
-  { href: "/dev/role-map", label: "Map Roles", icon: GitMerge },
+export const devAdminLinks = [
+  { href: "/dev/products", label: "Manage Products", icon: LayoutList },
+  {
+    href: "/dev/products-requests",
+    label: "Manage Product Requests",
+    icon: Database,
+  },
+  { href: "/dev/roles", label: "Employees Table", icon: ShieldCheck },
+  { href: "/dev/role-map", label: "Employee Roles", icon: GitMerge },
+  {
+    href: "/dev/role-map-requests",
+    label: "Employee Roles Requests",
+    icon: GitMerge,
+  },
+
+  {
+    href: "/dev/register-employees",
+    label: "Register Employees",
+    icon: UserCircle,
+  },
+  {
+    href: "/dev/register-employees-requests",
+    label: "Register Employees Requests",
+    icon: UserCircle,
+  },
   { href: "/dev/promotions", label: "Promotions Config", icon: Tag },
+  { href: "/dev/audit-logs", label: "Audit Logs", icon: GitMerge },
 ];
 
 const isDev = process.env.NODE_ENV === "development";
@@ -83,7 +105,7 @@ export function SidebarTemplate() {
               <div className="mt-4 mb-1 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t pt-4">
                 Dev / Admin
               </div>
-              <NavSection links={devLinks} />
+              <NavSection links={devAdminLinks} />
             </>
           )}
         </nav>

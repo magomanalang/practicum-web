@@ -8,28 +8,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import LoanProductDropDown from "./LoanProductDropDown";
+import LoanProductDropDown from "../dropdowns/LoanProductDropDown";
+import CustomerListDropDown from "../dropdowns/CustomerListDropDown";
 
 export function LoanApplicationForm({
   ...props
 }: React.ComponentProps<typeof Card>) {
   const [form, setForm] = useState({
+    customerId: "",
     loanProduct: "",
     interestRate: "",
-    minimumAmount: "",
-    maximumAmount: "",
-    minimumTerm: "",
-    maximumTerm: "",
-    proposalAmount: "",
-    proposalTerm: "",
+    amount: "",
+    startDate: "",
+    endDate: "",
   });
 
   function handleSubmit(e: React.FormEvent): void {
@@ -58,12 +52,45 @@ export function LoanApplicationForm({
               <Field>
                 <FieldLabel htmlFor="fullName">Loan Product</FieldLabel>
               </Field>
+
+              {/* REMINDER TO CHANGE */}
+              <CustomerListDropDown
+                value={form.customerId}
+                onChange={(val) =>
+                  setForm((prev) => ({ ...prev, documentType: val }))
+                }
+              />
               <LoanProductDropDown
                 value={form.loanProduct}
                 onChange={(val) =>
                   setForm((prev) => ({ ...prev, documentType: val }))
                 }
               />
+              <Input
+                value={form.amount}
+                onChange={handleChange}
+                id="amount"
+                placeholder="Amount"
+              />
+              <Input
+                value={form.interestRate}
+                onChange={handleChange}
+                id="interestRate"
+                placeholder="Interest Rate"
+              />
+              <Input
+                value={form.startDate}
+                onChange={handleChange}
+                id="startDate"
+                placeholder="Start Date"
+              />
+              <Input
+                value={form.endDate}
+                onChange={handleChange}
+                id="endDate"
+                placeholder="End Date"
+              />
+              <Button>Submit Loan for Approval</Button>
             </FieldGroup>
           </form>
         </CardContent>

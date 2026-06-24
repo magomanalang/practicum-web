@@ -4,7 +4,7 @@ export async function POST(request: Request) {
   console.log("2. API_URL:", process.env.API_URL);
 
   try {
-    const res = await fetch(`${process.env.API_URL}/api/users`, {
+    const res = await fetch(`${process.env.API_URL}/api/Customer/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
