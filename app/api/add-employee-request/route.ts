@@ -11,7 +11,7 @@ export async function POST(request: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        Id: body.Id,
+        Id: body.id || 0,
         FirstName: body.FirstName,
         MiddleName: body.MiddleName,
         LastName: body.LastName,

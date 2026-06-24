@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import EmployeeRolesDropDown from "../dropdowns/EmployeeRolesDropDown";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 
 interface FormState {
   firstName: string;
@@ -27,6 +28,7 @@ export function EmployeeApplicationForm({
   ...props
 }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
+  const { data: session } = useSession();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -48,20 +50,25 @@ export function EmployeeApplicationForm({
     const year = new Date().getFullYear();
     const generatedEmployeeId = `${firstInitial}${lastInitial}${year}0001`;
 
-    const submittedDateTime = new Date().toISOString();
+    const generatedPassword = `${form.firstName}${year}`;
+    const generatedEmail = `${form.firstName}${lastInitial}${year}@gmail.com`;
+    const dateTimeNow = new Date().toISOString();
     const sessionUser = session?.user?.email || "Admin";
-
     try {
       const res = await fetch("/api/add-employee-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName: form.firstName,
-          middleName: form.middleName,
-          lastName: form.lastName,
-          suffix: form.suffix,
-          email: form.email,
-          employeeRoles: form.employeeRoles,
+          FirstName: form.firstName,
+          MiddleName: form.middleName,
+          LastName: form.lastName,
+          Suffix: form.suffix,
+          Email: generatedEmail,
+          Password: generatedPassword,
+          EmployeeId: generatedEmployeeId,
+          EmployeeRoles: form.employeeRoles,
+          CreatedDateTime: dateTimeNow,
+          CreatedBy: sessionUser,
         }),
       });
 
@@ -128,13 +135,12 @@ export function EmployeeApplicationForm({
                 onChange={handleInputChange}
                 required
               />
-              <FieldLabel htmlFor="lastName">Suffix</FieldLabel>
+              <FieldLabel htmlFor="suffix">Suffix</FieldLabel>
               <Input
                 id="suffix"
                 type="text"
                 value={form.suffix}
                 onChange={handleInputChange}
-                required
               />
               <EmployeeRolesDropDown
                 value={form.employeeRoles}
