@@ -61,8 +61,10 @@ export function DocumentApprovalTable() {
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
+
       {
         accessorKey: "fullName",
+        accessorFn: (row) => row.full_name,
         header: "Full Name",
       },
       {
@@ -71,40 +73,46 @@ export function DocumentApprovalTable() {
       },
       {
         accessorKey: "zipCode",
+        accessorFn: (row) => row.zip_code,
         header: "Zip Code",
       },
       {
         accessorKey: "addressLine",
+        accessorFn: (row) => row.address_line,
         header: "Address Line",
       },
       {
         accessorKey: "documentType",
+        accessorFn: (row) => row.document_type,
         header: "Document Type",
       },
       {
         accessorKey: "documentImagePath",
+        accessorFn: (row) => row.document_image_path,
         header: "Document Image Path",
       },
       {
         accessorKey: "submittedBy",
+        accessorFn: (row) => row.submitted_by,
         header: "Submitted By",
       },
       {
         accessorKey: "submittedAt",
+        accessorFn: (row) => row.submitted_at,
         header: "Submitted Date Time",
       },
       {
         id: "actions",
-        header: "Actions",
+        header: <div className="text-right">Actions</div>,
         cell: ({ row }) => (
-          <>
-            <Button variant="link" size="sm">
+          <div className="flex items-center justify-end gap-2">
+            <Button variant="outline" size="sm">
               Approve
             </Button>
-            <Button variant="link" size="sm">
+            <Button variant="destructive" size="sm">
               Reject
             </Button>
-          </>
+          </div>
         ),
       },
     ],
@@ -123,7 +131,7 @@ export function DocumentApprovalTable() {
   return (
     <>
       <Card>
-        <CardHeader className="justify-center">
+        <CardHeader>
           <CardTitle>Document Approval Requests</CardTitle>
           <CardDescription>View Customers Requirements</CardDescription>
         </CardHeader>
@@ -157,7 +165,10 @@ export function DocumentApprovalTable() {
                 </TableRow>
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow
+                    key={row.id}
+                    className="transition-colors hover:bg-muted/50"
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
                         {flexRender(
