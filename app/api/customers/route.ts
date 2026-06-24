@@ -1,6 +1,8 @@
 export async function GET() {
   try {
-    const res = await fetch(`${process.env.API_URL}/api/Customer`);
+    const res = await fetch(
+      `${process.env.API_URL}/api/Customer/get-customers`,
+    );
 
     if (!res.ok) {
       return Response.json(

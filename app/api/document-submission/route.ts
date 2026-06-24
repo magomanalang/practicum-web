@@ -4,7 +4,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const backendUrl = `${process.env.API_URL}/api/Kyc/documents`;
+    const backendUrl = `${process.env.API_URL}/api/Kyc/register-customer-documents`;
 
     const dotNetResponse = await fetch(backendUrl, {
       method: "POST",
