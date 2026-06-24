@@ -22,6 +22,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import React from "react";
 import { useMemo } from "react";
 
 export function DocumentApprovalTable() {
@@ -32,6 +33,23 @@ export function DocumentApprovalTable() {
     created_by: string;
     date_created: Date;
   };
+
+  React.useEffect(() => {
+    async function fetchDocuments() {
+      try {
+        const res = await fetch("/api/auth/get-document-submissions");
+        if (res.ok) {
+          const data = await res.json();
+          setCustomers(data);
+        }
+      } catch {
+        console.error("Failed to Fetch existing Loan Products");
+      } finally {
+        isLoading(false);
+      }
+    }
+    fetchDocuments();
+  }, []);
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
