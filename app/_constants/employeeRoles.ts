@@ -1,31 +1,33 @@
 export enum EmployeeRoles {
   /** Views request of loan and approves or rejects them */
-  LoanApprover = "LoanApprover",
+  LoanApprover = "Loan Approver",
 
   /** Creates the loan request and their details */
-  LoanMaker = "LoanMaker",
+  LoanMaker = "Loan Maker",
 
   /** Creates the loan products and their details */
-  LoanProductMaker = "LoanProductMaker",
+  LoanProductMaker = "Loan Product Maker",
 
   /** Approves or rejects the loan products and their details */
-  LoanProductApprover = "LoanProductApprover",
+  LoanProductApprover = "Loan Product Approver",
 
   /** Creates the employees and their details */
-  EmployeeMaker = "EmployeeMaker",
+  EmployeeMaker = "Employee Maker",
 
   /** Approves or rejects the employees and their details */
-  EmployeeApprover = "EmployeeApprover",
+  EmployeeApprover = "Employee Approver",
 
   /** Approves or rejects the employee roles and their details */
-  EmployeeRoleApprover = "EmployeeRoleApprover",
+  EmployeeRoleApprover = "Employee Role Approver",
 
   /** Creates the employee roles and their details */
-  EmployeeRoleMaker = "EmployeeRoleMaker",
+  EmployeeRoleMaker = "Employee Role Maker",
 
   /** Creates the users and their details */
-  CustomerMaker = "CustomerMaker",
+  CustomerMaker = "Customer Maker",
 
   /** Approves or rejects the customers and their details */
-  CustomerApprover = "CustomerApprover",
+  CustomerApprover = "Customer Approver",
+
+  Admin = "Admin",
 }

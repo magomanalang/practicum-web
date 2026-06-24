@@ -1,40 +1,98 @@
 "use client";
 
 import { EmployeeRoles } from "@/app/_constants/employeeRoles";
+import { Button } from "@/components/ui/button";
+import {
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Command } from "cmdk";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import React from "react";
 
-interface EmployeeRolesDropDownProps {
-  value: string;
-  onChange: (value: string) => void;
+interface EmployeeRolesMultiSelectProps {
+  value: string[];
+  onChange: (value: string[]) => void;
 }
 
 export default function EmployeeRolesDropDown({
   value,
   onChange,
-}: EmployeeRolesDropDownProps) {
+}: EmployeeRolesMultiSelectProps) {
+  const [open, setOpen] = React.useState(false);
   const employeeRoles = Object.values(EmployeeRoles);
+
+  const handleSelect = (role: string) => {
+    const isAlreadySelected = value.includes(role);
+    if (isAlreadySelected) {
+      onChange(value.filter((item) => item !== role));
+    } else {
+      onChange([...value, role]);
+    }
+  };
   return (
-    <div className="relative w-full">
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full appearance-none rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
-      >
-        <option value="" disabled hidden>
-          Employee Roles{" "}
-        </option>
-        {employeeRoles.map((emp, index) => (
-          <option
-            key={index}
-            value={emp}
-            className="bg-popover text-popover-foreground"
-          >
-            {emp}
-          </option>
-        ))}
-      </select>
-      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center justify-center opacity-50">
-        <span className="text-xs">▼</span>
-      </div>
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between h-auto min-h-10 text-left"
+        >
+          {value.length > 0 ? (
+            <span className="flex flex-wrap gap-1 max-w-[90%] truncate">
+              {value.join(", ")}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">Select Employee Roles</span>
+          )}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0 min-w-50px" align="start">
+        <Command>
+          <CommandInput placeholder="Search roles..." />
+          <CommandList>
+            <CommandEmpty>No Roles Found</CommandEmpty>
+            <CommandGroup>
+              {employeeRoles.map((role, index) => {
+                const isSelected = value.includes(role);
+                return (
+                  <CommandItem
+                    key={index}
+                    value={role}
+                    onSelect={() => handleSelect(role)}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    <div
+                      className={cn(
+                        "flex h-4 w-4 items-center justify-center rounded-sm border border-primary transition-all",
+                        isSelected
+                          ? "bg-primary text-primary-foreground"
+                          : "opacity-50",
+                      )}
+                    >
+                      {isSelected && <Check className="h-3 w-3 stroke-3" />}
+                    </div>
+                    <span className={cn(isSelected && "font-medium")}>
+                      {role}
+                    </span>
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

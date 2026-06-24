@@ -16,16 +16,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 interface FormState {
-  id: string;
   firstName: string;
   middleName: string;
   lastName: string;
   suffix: string;
-  email: string;
   employeeRoles: EmployeeRoles[];
-  createdBy: "";
-  createdDateTime: "";
-  requestType: "Add";
 }
 
 export function EmployeeApplicationForm({
@@ -36,22 +31,25 @@ export function EmployeeApplicationForm({
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState<FormState>({
-    id: "",
     firstName: "",
     middleName: "",
     lastName: "",
     suffix: "",
-    email: "",
     employeeRoles: [],
-    createdBy: "",
-    createdDateTime: "",
-    requestType: "Add",
   });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    const firstInitial = form.firstName[0].toUpperCase();
+    const lastInitial = form.middleName[0].toUpperCase();
+    const year = new Date().getFullYear();
+    const generatedEmployeeId = `${firstInitial}${lastInitial}${year}0001`;
+
+    const submittedDateTime = new Date().toISOString();
+    const sessionUser = session?.user?.email || "Admin";
 
     try {
       const res = await fetch("/api/add-employee-request", {
@@ -80,25 +78,20 @@ export function EmployeeApplicationForm({
   }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    const stateKey = (id.charAt(0).toUpperCase() +
-      id.slice(1)) as keyof FormState;
 
     setForm((prev) => ({
       ...prev,
-      [stateKey]: value,
+      [id]: value,
     }));
   };
 
-  const handleRoleChange = (selectedRole: string) => {
-    const role = selectedRole as EmployeeRoles;
-    setForm((prev) => {
-      if (prev.employeeRoles.includes(role)) return prev;
-      return {
-        ...prev,
-        EmployeeRoles: [...prev.employeeRoles, role],
-      };
-    });
+  const handleRoleChange = (selectedRoles: string[]) => {
+    setForm((prev) => ({
+      ...prev,
+      employeeRoles: selectedRoles as EmployeeRoles[],
+    }));
   };
+
   return (
     <Card className="w-full max-w-2xl" {...props}>
       <CardHeader>
@@ -108,69 +101,62 @@ export function EmployeeApplicationForm({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="firstName">First Name</FieldLabel>
-            <Input
-              id="firstName"
-              type="text"
-              value={form.firstName}
-              onChange={handleInputChange}
-              required
-            />
-            <FieldLabel htmlFor="middleName">Middle Name</FieldLabel>
-            <Input
-              id="middleName"
-              type="text"
-              value={form.middleName}
-              onChange={handleInputChange}
-              required
-            />
-            <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
-            <Input
-              id="lastName"
-              type="text"
-              value={form.lastName}
-              onChange={handleInputChange}
-              required
-            />
-            <FieldLabel htmlFor="lastName">Suffix</FieldLabel>
-            <Input
-              id="suffix"
-              type="text"
-              value={form.suffix}
-              onChange={handleInputChange}
-              required
-            />
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <Input
-              id="email"
-              type="text"
-              value={form.email}
-              onChange={handleInputChange}
-              required
-            />
-            <EmployeeRolesDropDown
-              value={form.employeeRoles[form.employeeRoles.length - 1] || ""}
-              onChange={handleRoleChange}
-            />
-            {form.employeeRoles.length > 0 && (
-              <div className="mt-2 text-xs text-muted-foreground">
-                <strong>Selected:</strong> {form.employeeRoles.join(", ")}
-              </div>
-            )}
+        <form onSubmit={handleSubmit}>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="firstName">First Name</FieldLabel>
+              <Input
+                id="firstName"
+                type="text"
+                value={form.firstName}
+                onChange={handleInputChange}
+                required
+              />
+              <FieldLabel htmlFor="middleName">Middle Name</FieldLabel>
+              <Input
+                id="middleName"
+                type="text"
+                value={form.middleName}
+                onChange={handleInputChange}
+                required
+              />
+              <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
+              <Input
+                id="lastName"
+                type="text"
+                value={form.lastName}
+                onChange={handleInputChange}
+                required
+              />
+              <FieldLabel htmlFor="lastName">Suffix</FieldLabel>
+              <Input
+                id="suffix"
+                type="text"
+                value={form.suffix}
+                onChange={handleInputChange}
+                required
+              />
+              <EmployeeRolesDropDown
+                value={form.employeeRoles}
+                onChange={handleRoleChange}
+              />
+              {form.employeeRoles.length > 0 && (
+                <div className="mt-2 text-xs text-muted-foreground">
+                  <strong>Selected:</strong> {form.employeeRoles.join(", ")}
+                </div>
+              )}
 
-            <Button
-              variant="outline"
-              type="submit"
-              className="w-full"
-              disabled={false}
-              onClick={handleSubmit}
-            >
-              Submit For Approval
-            </Button>
-          </Field>
-        </FieldGroup>
+              <Button
+                variant="outline"
+                type="submit"
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? "Submitting..." : "Submit For Approval"}{" "}
+              </Button>
+            </Field>
+          </FieldGroup>
+        </form>
       </CardContent>
     </Card>
   );
