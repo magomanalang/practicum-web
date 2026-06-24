@@ -1,5 +1,7 @@
-import { SignupForm } from "@/app/_components/pages/SignupPage";
+"use client";
+
+import { EmployeeApplicationForm } from "@/app/_components/forms/EmployeeApplicationForm";
 
 export default function Page() {
-  return <SignupForm />;
+  return <EmployeeApplicationForm />;
 }
