@@ -1,8 +1,9 @@
 "use client";
 
-import { EmployeeRoles } from "@/app/_constants/employeeRoles";
+import { EmployeeRoleDisplayValues } from "@/app/_constants/employeeRoles";
 import { Button } from "@/components/ui/button";
 import {
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -14,7 +15,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Command } from "cmdk";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import React from "react";
@@ -29,7 +29,7 @@ export default function EmployeeRolesDropDown({
   onChange,
 }: EmployeeRolesMultiSelectProps) {
   const [open, setOpen] = React.useState(false);
-  const employeeRoles = Object.values(EmployeeRoles);
+  const employeeRoles = EmployeeRoleDisplayValues;
 
   const handleSelect = (role: string) => {
     const isAlreadySelected = value.includes(role);
@@ -37,6 +37,15 @@ export default function EmployeeRolesDropDown({
       onChange(value.filter((item) => item !== role));
     } else {
       onChange([...value, role]);
+    }
+  };
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLDivElement>,
+    role: string,
+  ) => {
+    if (e.key === " " || e.key === "Enter") {
+      handleSelect(role);
     }
   };
   return (
@@ -64,21 +73,26 @@ export default function EmployeeRolesDropDown({
           <CommandList>
             <CommandEmpty>No Roles Found</CommandEmpty>
             <CommandGroup>
-              {employeeRoles.map((role, index) => {
+              {employeeRoles.map((role) => {
                 const isSelected = value.includes(role);
                 return (
                   <CommandItem
-                    key={index}
+                    key={role}
                     value={role}
                     onSelect={() => handleSelect(role)}
                     className="flex items-center gap-2 cursor-pointer"
                   >
                     <div
+                      role="checkbox"
+                      aria-checked={isSelected}
+                      tabIndex={0}
+                      onKeyDown={(e) => handleKeyDown(e, role)}
                       className={cn(
                         "flex h-4 w-4 items-center justify-center rounded-sm border border-primary transition-all",
                         isSelected
                           ? "bg-primary text-primary-foreground"
                           : "opacity-50",
+                        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
                       )}
                     >
                       {isSelected && <Check className="h-3 w-3 stroke-3" />}

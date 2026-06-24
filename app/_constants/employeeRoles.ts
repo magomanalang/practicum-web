@@ -1,33 +1,42 @@
 export enum EmployeeRoles {
-  /** Views request of loan and approves or rejects them */
-  LoanApprover = "Loan Approver",
+  LoanApprover = 0,
+  LoanMaker = 1,
+  LoanProductMaker = 2,
+  LoanProductApprover = 3,
+  EmployeeMaker = 4,
+  EmployeeApprover = 5,
+  EmployeeRoleApprover = 6,
+  EmployeeRoleMaker = 7,
+  CustomerMaker = 8,
+  Admin = 9,
+}
+export const RoleDisplayNames: Record<EmployeeRoles, string> = {
+  [EmployeeRoles.LoanApprover]: "Loan Approver",
+  [EmployeeRoles.LoanMaker]: "Loan Maker",
+  [EmployeeRoles.LoanProductMaker]: "Loan Product Maker",
+  [EmployeeRoles.LoanProductApprover]: "Loan Product Approver",
+  [EmployeeRoles.EmployeeMaker]: "Employee Maker",
+  [EmployeeRoles.EmployeeApprover]: "Employee Approver",
+  [EmployeeRoles.EmployeeRoleApprover]: "Employee Role Approver",
+  [EmployeeRoles.EmployeeRoleMaker]: "Employee Role Maker",
+  [EmployeeRoles.CustomerMaker]: "Customer Maker",
+  [EmployeeRoles.Admin]: "Administrator",
+};
 
-  /** Creates the loan request and their details */
-  LoanMaker = "Loan Maker",
+export const EmployeeRoleDisplayValues = Object.values(RoleDisplayNames);
 
-  /** Creates the loan products and their details */
-  LoanProductMaker = "Loan Product Maker",
+export const RoleNameToValueMap: Record<string, EmployeeRoles> = Object.entries(
+  RoleDisplayNames,
+).reduce(
+  (acc, [key, value]) => {
+    acc[value] = Number(key) as EmployeeRoles;
+    return acc;
+  },
+  {} as Record<string, EmployeeRoles>,
+);
 
-  /** Approves or rejects the loan products and their details */
-  LoanProductApprover = "Loan Product Approver",
-
-  /** Creates the employees and their details */
-  EmployeeMaker = "Employee Maker",
-
-  /** Approves or rejects the employees and their details */
-  EmployeeApprover = "Employee Approver",
-
-  /** Approves or rejects the employee roles and their details */
-  EmployeeRoleApprover = "Employee Role Approver",
-
-  /** Creates the employee roles and their details */
-  EmployeeRoleMaker = "Employee Role Maker",
-
-  /** Creates the users and their details */
-  CustomerMaker = "Customer Maker",
-
-  /** Approves or rejects the customers and their details */
-  CustomerApprover = "Customer Approver",
-
-  Admin = "Admin",
+export function EmployeeRolesReadable(
+  roleValue: EmployeeRoles | number,
+): string {
+  return RoleDisplayNames[roleValue as EmployeeRoles] ?? "Unknown Role";
 }

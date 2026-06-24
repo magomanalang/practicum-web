@@ -1,6 +1,5 @@
 "use client";
 
-import { EmployeeRoles } from "@/app/_constants/employeeRoles";
 import {
   Card,
   CardContent,
@@ -15,13 +14,15 @@ import EmployeeRolesDropDown from "../dropdowns/EmployeeRolesDropDown";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
+import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
+import { RoleNameToValueMap } from "@/app/_constants/employeeRoles";
 
 interface FormState {
   firstName: string;
   middleName: string;
   lastName: string;
   suffix: string;
-  employeeRoles: EmployeeRoles[];
+  employeeRoles: string[];
 }
 
 export function EmployeeApplicationForm({
@@ -39,12 +40,13 @@ export function EmployeeApplicationForm({
     suffix: "",
     employeeRoles: [],
   });
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
+    const backendNumericRoles = form.employeeRoles.map(
+      (roleName) => RoleNameToValueMap[roleName],
+    );
     const firstInitial = form.firstName[0].toUpperCase();
     const lastInitial = form.middleName[0].toUpperCase();
     const year = new Date().getFullYear();
@@ -52,8 +54,9 @@ export function EmployeeApplicationForm({
 
     const generatedPassword = `${form.firstName}${year}`;
     const generatedEmail = `${form.firstName}${lastInitial}${year}@gmail.com`;
-    const dateTimeNow = new Date().toISOString();
+    const dateTimeNow = toFormattedPhDateTime();
     const sessionUser = session?.user?.email || "Admin";
+
     try {
       const res = await fetch("/api/add-employee-request", {
         method: "POST",
@@ -66,7 +69,7 @@ export function EmployeeApplicationForm({
           Email: generatedEmail,
           Password: generatedPassword,
           EmployeeId: generatedEmployeeId,
-          EmployeeRoles: form.employeeRoles,
+          EmployeeRoles: backendNumericRoles,
           CreatedDateTime: dateTimeNow,
           CreatedBy: sessionUser,
         }),
@@ -95,7 +98,7 @@ export function EmployeeApplicationForm({
   const handleRoleChange = (selectedRoles: string[]) => {
     setForm((prev) => ({
       ...prev,
-      employeeRoles: selectedRoles as EmployeeRoles[],
+      employeeRoles: selectedRoles,
     }));
   };
 
