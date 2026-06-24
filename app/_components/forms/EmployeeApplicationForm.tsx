@@ -40,6 +40,9 @@ export function EmployeeApplicationForm({
     suffix: "",
     email: "",
     employeeRoles: [],
+    createdBy: "",
+    createdDateTime: "",
+    requestType: "Add"
   });
 
   async function handleSubmit(e: React.FormEvent) {
