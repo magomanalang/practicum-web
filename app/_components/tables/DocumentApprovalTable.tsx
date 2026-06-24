@@ -27,27 +27,33 @@ import { useMemo } from "react";
 
 export function DocumentApprovalTable() {
   type TableRow = {
-    id: string;
-    int: number;
-    condition: boolean;
-    created_by: string;
-    date_created: Date;
+    customer_id: string;
+    full_name: string;
+    country: string;
+    zip_code: string;
+    address_line: string;
+    document_type: string;
+    document_image_path: string;
+    submitted_by: string;
+    submitted_at: Date;
   };
-  const [documents, setDocuments] = React.useState<>([]);
-const [loading, isLoading] = React.useState(false);
+
+  const [documents, setDocuments] = React.useState<TableRow[]>([]);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     async function fetchDocuments() {
+      setLoading(true);
       try {
         const res = await fetch("/api/auth/get-document-submissions");
         if (res.ok) {
           const data = await res.json();
           setDocuments(data);
         }
-      } catch {
-        console.error("Failed to Fetch existing Loan Products");
+      } catch (error) {
+        console.error("Failed to fetch document submissions:", error);
       } finally {
-        isLoading(false);
+        setLoading(false);
       }
     }
     fetchDocuments();
@@ -56,23 +62,60 @@ const [loading, isLoading] = React.useState(false);
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
       {
-        accessorKey: "data_name",
-        header: "data_display_name",
+        accessorKey: "customerId",
+        header: "Customer ID",
+      },
+      {
+        accessorKey: "fullName",
+        header: "Full Name",
+      },
+      {
+        accessorKey: "country",
+        header: "Country",
+      },
+      {
+        accessorKey: "zipCode",
+        header: "Zip Code",
+      },
+      {
+        accessorKey: "addressLine",
+        header: "Address Line",
+      },
+      {
+        accessorKey: "documentType",
+        header: "Document Type",
+      },
+      {
+        accessorKey: "documentImagePath",
+        header: "Document Image Path",
+      },
+      {
+        accessorKey: "submittedBy",
+        header: "Submitted By",
+      },
+      {
+        accessorKey: "submittedAt",
+        header: "Submitted Date Time",
       },
       {
         id: "actions",
-        header: "data_display_name",
+        header: "Actions",
         cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            Click to View
-          </Button>
+          <>
+            <Button variant="link" size="sm">
+              Approve
+            </Button>
+            <Button variant="link" size="sm">
+              Reject
+            </Button>
+          </>
         ),
       },
     ],
     [],
   );
 
-  const data = useMemo<TableRow[]>(() => [], []);
+  const data = useMemo(() => documents, [documents]);
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -84,9 +127,9 @@ const [loading, isLoading] = React.useState(false);
   return (
     <>
       <Card>
-        <CardHeader>
-          <CardTitle>Loan History</CardTitle>
-          <CardDescription>View your Loan Records</CardDescription>
+        <CardHeader className="justify-center">
+          <CardTitle>Document Approval Requests</CardTitle>
+          <CardDescription>View Customers Requirements</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -107,18 +150,38 @@ const [loading, isLoading] = React.useState(false);
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+              {loading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    Loading...
+                  </TableCell>
                 </TableRow>
-              ))}
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
