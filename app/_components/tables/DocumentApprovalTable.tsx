@@ -62,10 +62,6 @@ export function DocumentApprovalTable() {
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
       {
-        accessorKey: "customerId",
-        header: "Customer ID",
-      },
-      {
         accessorKey: "fullName",
         header: "Full Name",
       },
