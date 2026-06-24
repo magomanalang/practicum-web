@@ -53,17 +53,16 @@ export function LoanApplicationForm({
                 <FieldLabel htmlFor="fullName">Loan Product</FieldLabel>
               </Field>
 
-              {/* REMINDER TO CHANGE */}
               <CustomerListDropDown
                 value={form.customerId}
                 onChange={(val) =>
-                  setForm((prev) => ({ ...prev, documentType: val }))
+                  setForm((prev) => ({ ...prev, customerId: val }))
                 }
               />
               <LoanProductDropDown
                 value={form.loanProduct}
                 onChange={(val) =>
-                  setForm((prev) => ({ ...prev, documentType: val }))
+                  setForm((prev) => ({ ...prev, loanProduct: val }))
                 }
               />
               <Input

@@ -33,6 +33,8 @@ export function DocumentApprovalTable() {
     created_by: string;
     date_created: Date;
   };
+  const [documents, setDocuments] = React.useState<>([]);
+const [loading, isLoading] = React.useState(false);
 
   React.useEffect(() => {
     async function fetchDocuments() {
@@ -40,7 +42,7 @@ export function DocumentApprovalTable() {
         const res = await fetch("/api/auth/get-document-submissions");
         if (res.ok) {
           const data = await res.json();
-          setCustomers(data);
+          setDocuments(data);
         }
       } catch {
         console.error("Failed to Fetch existing Loan Products");
