@@ -23,6 +23,9 @@ interface FormState {
   suffix: string;
   email: string;
   employeeRoles: EmployeeRoles[];
+  createdBy: "";
+  createdDateTime: "";
+  requestType: "Add";
 }
 
 export function EmployeeApplicationForm({
@@ -42,7 +45,7 @@ export function EmployeeApplicationForm({
     employeeRoles: [],
     createdBy: "",
     createdDateTime: "",
-    requestType: "Add"
+    requestType: "Add",
   });
 
   async function handleSubmit(e: React.FormEvent) {
