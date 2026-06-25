@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,29 +26,30 @@ import {
 import React from "react";
 import { useMemo } from "react";
 
-export function CustomersTable() {
+export function EmployeeRequestsTable() {
   type TableRow = {
-    id: string;
+    employeeId: string;
     firstName: string;
     middleName: string;
     lastName: string;
     suffix: string;
-    balance: number;
-    dateOfBirth: Date;
-    status: string;
+    email: string;
+    requestType: string;
+    createdBy: string;
+    createdDateTime: Date;
   };
 
-  const [customers, setCustomers] = React.useState<TableRow[]>([]);
+  const [employees, setEmployees] = React.useState<TableRow[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    async function fetchCustomers() {
+    async function fetchEmployeeRequests() {
       setLoading(true);
       try {
-        const res = await fetch("/api/auth/get-customers");
+        const res = await fetch("/api/auth/get-employee-requests");
         if (res.ok) {
           const data = await res.json();
-          setCustomers(data);
+          setEmployees(data);
         }
       } catch (error) {
         console.error("Failed to fetch customers:", error);
@@ -55,7 +57,7 @@ export function CustomersTable() {
         setLoading(false);
       }
     }
-    fetchCustomers();
+    fetchEmployeeRequests();
   }, []);
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
@@ -69,33 +71,24 @@ export function CustomersTable() {
         header: "Full Name",
       },
       {
-        accessorKey: "balance",
-        header: () => <div className="text-center">Balance</div>,
-        cell: ({ row }) => {
-          const amount = parseFloat(row.getValue("balance"));
-          const formatted = new Intl.NumberFormat("en-PH", {
-            style: "currency",
-            currency: "PHP",
-          }).format(amount);
-
-          return <div className="text-center font-medium">{formatted}</div>;
-        },
+        accessorKey: "email",
+        header: "Email",
       },
       {
-        accessorKey: "dateOfBirth",
-        header: "Date Of Birth",
+        accessorKey: "createdBy",
+        header: "Created By",
       },
       {
-        accessorKey: "status",
-        header: "Status",
+        accessorKey: "createdDateTime",
+        header: "Created Date Time",
       },
       {
-        id: "view",
-        header: "View",
+        id: "requestType",
+        header: "Request Type",
         cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            View Full Profile
-          </Button>
+          <Badge variant="outline" color="primary">
+            {row.getValue("requestType")}
+          </Badge>
         ),
       },
       {
@@ -111,7 +104,7 @@ export function CustomersTable() {
     [],
   );
 
-  const data = useMemo<TableRow[]>(() => customers, [customers]);
+  const data = useMemo<TableRow[]>(() => employees, [employees]);
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
