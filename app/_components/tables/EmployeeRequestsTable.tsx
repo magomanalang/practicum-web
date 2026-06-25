@@ -33,6 +33,7 @@ import { useMemo } from "react";
 
 export function EmployeeRequestsTable() {
   type TableRow = {
+    id: string;
     employeeId: string;
     firstName: string;
     middleName: string;
@@ -65,6 +66,28 @@ export function EmployeeRequestsTable() {
     }
     fetchEmployeeRequests();
   }, []);
+
+  async function handleRejectClick(id: string) {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/auth/reject-employee-request?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setEmployees((prevEmployees) =>
+          prevEmployees.filter((employee) => employee.id !== id),
+        );
+      } else {
+        const errorData = await res.json();
+        console.error("Backend error:", errorData.message);
+      }
+    } catch (error) {
+      console.error("Failed to reject employee request:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
@@ -148,7 +171,11 @@ export function EmployeeRequestsTable() {
             <Button variant="outline" size="sm">
               Approve
             </Button>
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleRejectClick(row.original.id)}
+            >
               Reject
             </Button>
           </>
