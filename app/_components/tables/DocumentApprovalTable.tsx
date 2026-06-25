@@ -61,7 +61,6 @@ export function DocumentApprovalTable() {
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
-
       {
         accessorKey: "fullName",
         accessorFn: (row) => row.full_name,
@@ -103,7 +102,7 @@ export function DocumentApprovalTable() {
       },
       {
         id: "actions",
-        header: <div className="text-right">Actions</div>,
+        header: "Actions",
         cell: ({ row }) => (
           <div className="flex items-center justify-end gap-2">
             <Button variant="outline" size="sm">
