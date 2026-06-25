@@ -40,7 +40,7 @@ export default function CustomerListDropDown({
   React.useEffect(() => {
     async function fetchCustomers() {
       try {
-        const res = await fetch("/api/customers");
+        const res = await fetch("/api/auth/get-customers");
         if (res.ok) {
           const data = await res.json();
           setCustomers(data);

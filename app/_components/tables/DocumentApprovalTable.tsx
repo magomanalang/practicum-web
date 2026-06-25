@@ -113,7 +113,6 @@ export function DocumentApprovalTable() {
 
   const data = useMemo(() => documents, [documents]);
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,

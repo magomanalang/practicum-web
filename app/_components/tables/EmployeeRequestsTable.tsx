@@ -5,6 +5,7 @@ import {
   RoleNameToValueMap,
 } from "@/app/_constants/employeeRoles";
 import { RequestTypeReadable } from "@/app/_constants/requestTypes";
+import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +29,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React from "react";
+import { useSession } from "next-auth/react";
+import React, { useCallback } from "react";
 import { useMemo } from "react";
 
 export function EmployeeRequestsTable() {
@@ -40,6 +42,7 @@ export function EmployeeRequestsTable() {
     lastName: string;
     suffix: string;
     email: string;
+    password?: string;
     employeeRoles: number[];
     requestType: string;
     createdBy: string;
@@ -47,7 +50,10 @@ export function EmployeeRequestsTable() {
   };
 
   const [employees, setEmployees] = React.useState<TableRow[]>([]);
+  const { data: session } = useSession();
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [success, setSuccess] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     async function fetchEmployeeRequests() {
@@ -67,27 +73,86 @@ export function EmployeeRequestsTable() {
     fetchEmployeeRequests();
   }, []);
 
-  async function handleRejectClick(id: string) {
+  const handleRejectClick = useCallback(async (id: string) => {
     setLoading(true);
     try {
       const res = await fetch(`/api/auth/reject-employee-request?id=${id}`, {
         method: "DELETE",
       });
-
       if (res.ok) {
         setEmployees((prevEmployees) =>
           prevEmployees.filter((employee) => employee.id !== id),
         );
-      } else {
-        const errorData = await res.json();
-        console.error("Backend error:", errorData.message);
       }
     } catch (error) {
       console.error("Failed to reject employee request:", error);
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  const deleteEmployeeRequest = useCallback(async (id: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/auth/delete-employee-request?id=${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setEmployees((prevEmployees) =>
+          prevEmployees.filter((employee) => employee.id !== id),
+        );
+      }
+    } catch (error) {
+      console.error("Failed to delete employee request:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleApproveClick = useCallback(
+    async (employee: TableRow) => {
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
+      const dateTimeNow = toFormattedPhDateTime();
+      try {
+        const res = await fetch("/api/auth/register-employee", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            FirstName: employee.firstName,
+            MiddleName: employee.middleName,
+            LastName: employee.lastName,
+            Suffix: employee.suffix,
+            Email: employee.email,
+            Password: employee.password,
+            EmployeeId: employee.employeeId,
+            EmployeeRoles: employee.employeeRoles,
+            CreatedDateTime: employee.createdDateTime,
+            CreatedBy: employee.createdBy,
+            ApprovedBy: session?.user?.email || "Admin",
+            ApprovedDateTime: dateTimeNow,
+          }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.message ?? "Something went wrong.");
+        }
+
+        setSuccess("Employee registration request approved!");
+        setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+        deleteEmployeeRequest(employee.id);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Could not reach the server.",
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [session?.user?.email, deleteEmployeeRequest],
+  );
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
@@ -168,7 +233,11 @@ export function EmployeeRequestsTable() {
         header: "Actions",
         cell: ({ row }) => (
           <>
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleApproveClick(row.original)}
+            >
               Approve
             </Button>
             <Button
@@ -182,12 +251,11 @@ export function EmployeeRequestsTable() {
         ),
       },
     ],
-    [],
+    [handleApproveClick, handleRejectClick],
   );
 
   const data = useMemo<TableRow[]>(() => employees, [employees]);
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
