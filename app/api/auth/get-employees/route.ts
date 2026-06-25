@@ -1,7 +1,7 @@
 export async function GET() {
   try {
     const res = await fetch(
-      `${process.env.API_URL}/api/EmployeeRequest/get-employees`,
+      `${process.env.API_URL}/api/Employee/get-employees`,
     );
 
     if (!res.ok) {

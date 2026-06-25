@@ -48,7 +48,7 @@ export const devAdminLinks = [
     label: "Manage Product Requests",
     icon: Database,
   },
-  { href: "/dev/roles", label: "Employees Table", icon: ShieldCheck },
+  { href: "/dev/employees", label: "Employees Table", icon: ShieldCheck },
   { href: "/dev/role-map", label: "Employee Roles", icon: GitMerge },
   {
     href: "/dev/role-map-requests",

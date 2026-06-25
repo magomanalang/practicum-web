@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  EmployeeRolesReadable,
+  RoleNameToValueMap,
+} from "@/app/_constants/employeeRoles";
+import { RequestTypeReadable } from "@/app/_constants/requestTypes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,9 +39,11 @@ export function EmployeesTable() {
     lastName: string;
     suffix: string;
     email: string;
-    requestType: string;
+    employeeRoles: number[];
     createdBy: string;
     createdDateTime: Date;
+    approvedBy: string;
+    approvedDateTime: Date;
   };
 
   const [employees, setEmployees] = React.useState<TableRow[]>([]);
@@ -46,7 +53,7 @@ export function EmployeesTable() {
     async function fetchEmployeeRequests() {
       setLoading(true);
       try {
-        const res = await fetch("/api/auth/get-employee-requests");
+        const res = await fetch("/api/auth/get-employees");
         if (res.ok) {
           const data = await res.json();
           setEmployees(data);
@@ -75,21 +82,43 @@ export function EmployeesTable() {
         header: "Email",
       },
       {
+        accessorKey: "employeeRoles",
+        header: "Roles",
+        cell: ({ row }) => {
+          const rolesValue = row.original.employeeRoles;
+
+          if (
+            !rolesValue ||
+            (Array.isArray(rolesValue) && rolesValue.length === 0)
+          ) {
+            return "No Roles";
+          }
+
+          const normalizedArray = Array.isArray(rolesValue)
+            ? rolesValue
+            : [rolesValue];
+
+          return normalizedArray
+            .map((role) => {
+              if (typeof role === "string") {
+                const matchedEnumIntValue = RoleNameToValueMap[role];
+                return matchedEnumIntValue !== undefined
+                  ? EmployeeRolesReadable(matchedEnumIntValue)
+                  : role;
+              }
+
+              return EmployeeRolesReadable(role);
+            })
+            .join(", ");
+        },
+      },
+      {
         accessorKey: "createdBy",
         header: "Created By",
       },
       {
         accessorKey: "createdDateTime",
         header: "Created Date Time",
-      },
-      {
-        id: "requestType",
-        header: "Request Type",
-        cell: ({ row }) => (
-          <Badge variant="outline" color="primary">
-            {row.getValue("requestType")}
-          </Badge>
-        ),
       },
       {
         id: "actions",

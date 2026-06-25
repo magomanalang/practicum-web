@@ -1,6 +1,6 @@
 "use client";
 
-import { EmployeeRolesReadable } from "@/app/_constants/employeeRoles";
+import { EmployeeRolesReadable, RoleNameToValueMap } from "@/app/_constants/employeeRoles";
 import { RequestTypeReadable } from "@/app/_constants/requestTypes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export function EmployeeRequestsTable() {
     lastName: string;
     suffix: string;
     email: string;
-    employeeRoles: string;
+    employeeRoles: number[];
     requestType: string;
     createdBy: string;
     createdDateTime: Date;
@@ -81,13 +81,30 @@ export function EmployeeRequestsTable() {
         accessorKey: "employeeRoles",
         header: "Roles to be Assigned",
         cell: ({ row }) => {
-          const rolesValue = row.getValue("employeeRoles") as string;
-          if (!rolesValue) {
+          const rolesValue = row.original.employeeRoles;
+
+          if (
+            !rolesValue ||
+            (Array.isArray(rolesValue) && rolesValue.length === 0)
+          ) {
             return "No Roles";
           }
-          return rolesValue
-            .split(",")
-            .map((role) => EmployeeRolesReadable(parseInt(role.trim(), 10)))
+
+          const normalizedArray = Array.isArray(rolesValue)
+            ? rolesValue
+            : [rolesValue];
+
+          return normalizedArray
+            .map((role) => {
+              if (typeof role === "string") {
+                const matchedEnumIntValue = RoleNameToValueMap[role];
+                return matchedEnumIntValue !== undefined
+                  ? EmployeeRolesReadable(matchedEnumIntValue)
+                  : role;
+              }
+
+              return EmployeeRolesReadable(role);
+            })
             .join(", ");
         },
       },
@@ -100,16 +117,26 @@ export function EmployeeRequestsTable() {
         header: "Created Date Time",
       },
       {
-        id: "requestType",
+        accessorKey: "requestType",
         header: "Request Type",
-        cell: ({ row }) => (
-          <Badge variant="outline">
-            {RequestTypeReadable(
-              parseInt(row.getValue("requestType") as string, 10),
-            )}
-          </Badge>
-        ),
+        cell: ({ row }) => {
+          const rawType = row.original.requestType;
+
+          const parsedType =
+            typeof rawType === "string" && !isNaN(Number(rawType))
+              ? parseInt(rawType, 10)
+              : rawType;
+
+          return (
+            <Badge variant="outline">
+              {typeof parsedType === "number"
+                ? RequestTypeReadable(parsedType)
+                : String(rawType)}
+            </Badge>
+          );
+        },
       },
+
       {
         id: "actions",
         header: "Actions",
