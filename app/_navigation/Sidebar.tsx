@@ -1,4 +1,7 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 import {
   Sheet,
   SheetContent,
@@ -70,6 +73,12 @@ export const devAdminLinks = [
 const isDev = process.env.NODE_ENV === "development";
 
 export function SidebarTemplate() {
+  const { data: session } = useSession();
+
+  const displayName = session?.user?.name
+    ? session.user.name.split(" ")[0]
+    : "Guest";
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -86,11 +95,9 @@ export function SidebarTemplate() {
         <SheetHeader className="border-b pb-4">
           <SheetTitle className="flex items-center gap-2">
             <Home className="h-5 w-5 text-blue-600" />
-            <span>App Name</span>
+            <span>{displayName}</span>
           </SheetTitle>
-          <SheetDescription>
-            Access various sections of the application.
-          </SheetDescription>
+          <SheetDescription>test</SheetDescription>
         </SheetHeader>
         <nav className="flex flex-col gap-2 mt-6">
           <NavSection links={appLinks} />

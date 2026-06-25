@@ -13,7 +13,19 @@ const handler = NextAuth({
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-
+        if (
+          process.env.NODE_ENV === "development" &&
+          credentials.email === "admin@local.com" &&
+          credentials.password === "admin"
+        ) {
+          console.log("🛠️ Dev Admin Bypass Activated!");
+          return {
+            id: "dev-admin-id",
+            name: "Local Dev Admin",
+            email: "admin@local.com",
+            role: "admin",
+          };
+        }
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
@@ -27,9 +39,12 @@ const handler = NextAuth({
             },
           );
 
+          if (!res.ok) {
+            console.error(`Backend returned status code: ${res.status}`);
+            return null;
+          }
           const user = await res.json();
-
-          if (res.ok && user) {
+          if (user) {
             return user;
           }
           return null;
@@ -40,6 +55,7 @@ const handler = NextAuth({
       },
     }),
   ],
+
   pages: {
     signIn: "/login",
   },

@@ -1,5 +1,13 @@
-import { SignupForm } from "@/app/_components/pages/SignupPage";
+"use client";
+
+import { EmployeeApplicationForm } from "@/app/_components/forms/EmployeeApplicationForm";
 
 export default function Page() {
-  return <SignupForm />;
+  return (
+    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm">
+        <EmployeeApplicationForm />
+      </div>
+    </div>
+  );
 }

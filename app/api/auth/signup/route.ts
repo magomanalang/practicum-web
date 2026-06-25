@@ -4,11 +4,14 @@ export async function POST(request: Request) {
   console.log("2. API_URL:", process.env.API_URL);
 
   try {
-    const res = await fetch(`${process.env.API_URL}/api/Customer/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const res = await fetch(
+      `${process.env.API_URL}/api/Customer/register-customer`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+    );
     console.log("3. .NET response status:", res.status);
     const data = await res.json();
     return Response.json(data, { status: res.status });

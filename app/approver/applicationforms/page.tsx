@@ -1,3 +1,5 @@
+import { DocumentApprovalTable } from "@/app/_components/tables/DocumentApprovalTable";
+
 export default function Page() {
-  return <h1>HELLO</h1>;
+  return <DocumentApprovalTable />;
 }
