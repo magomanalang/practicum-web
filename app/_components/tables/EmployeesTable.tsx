@@ -69,6 +69,7 @@ export function EmployeesTable() {
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
+      { accessorKey: "employeeId", header: "Employee ID" },
       {
         accessorFn: (row) =>
           [row.firstName, row.middleName, row.lastName, row.suffix]

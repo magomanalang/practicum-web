@@ -1,6 +1,9 @@
 "use client";
 
-import { EmployeeRolesReadable, RoleNameToValueMap } from "@/app/_constants/employeeRoles";
+import {
+  EmployeeRolesReadable,
+  RoleNameToValueMap,
+} from "@/app/_constants/employeeRoles";
 import { RequestTypeReadable } from "@/app/_constants/requestTypes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -141,9 +144,14 @@ export function EmployeeRequestsTable() {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            Click to View
-          </Button>
+          <>
+            <Button variant="outline" size="sm">
+              Approve
+            </Button>
+            <Button variant="outline" size="sm">
+              Reject
+            </Button>
+          </>
         ),
       },
     ],
