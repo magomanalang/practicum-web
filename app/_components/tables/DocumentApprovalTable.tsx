@@ -28,14 +28,14 @@ import { useMemo } from "react";
 export function DocumentApprovalTable() {
   type TableRow = {
     customer_id: string;
-    full_name: string;
+    fullName: string;
     country: string;
-    zip_code: string;
-    address_line: string;
-    document_type: string;
-    document_image_path: string;
-    submitted_by: string;
-    submitted_at: Date;
+    zipCode: string;
+    addressLine: string;
+    documentType: string;
+    documentImagePath: string;
+    submittedBy: string;
+    submittedAt: Date;
   };
 
   const [documents, setDocuments] = React.useState<TableRow[]>([]);
@@ -63,7 +63,6 @@ export function DocumentApprovalTable() {
     () => [
       {
         accessorKey: "fullName",
-        accessorFn: (row) => row.full_name,
         header: "Full Name",
       },
       {
@@ -72,32 +71,26 @@ export function DocumentApprovalTable() {
       },
       {
         accessorKey: "zipCode",
-        accessorFn: (row) => row.zip_code,
         header: "Zip Code",
       },
       {
         accessorKey: "addressLine",
-        accessorFn: (row) => row.address_line,
         header: "Address Line",
       },
       {
         accessorKey: "documentType",
-        accessorFn: (row) => row.document_type,
         header: "Document Type",
       },
       {
         accessorKey: "documentImagePath",
-        accessorFn: (row) => row.document_image_path,
         header: "Document Image Path",
       },
       {
         accessorKey: "submittedBy",
-        accessorFn: (row) => row.submitted_by,
         header: "Submitted By",
       },
       {
         accessorKey: "submittedAt",
-        accessorFn: (row) => row.submitted_at,
         header: "Submitted Date Time",
       },
       {
