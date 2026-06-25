@@ -1,7 +1,8 @@
 export async function GET() {
   try {
-    const res = await fetch(`${process.env.API_URL}
-/api/EmployeeRequest/get-employee-requests`);
+    const res = await fetch(
+      `${process.env.API_URL}/api/EmployeeRequest/get-employees`,
+    );
 
     if (!res.ok) {
       return Response.json(

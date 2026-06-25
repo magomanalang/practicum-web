@@ -28,7 +28,7 @@ import {
 import React from "react";
 import { useMemo } from "react";
 
-export function EmployeesRequestsTable() {
+export function EmployeeRequestsTable() {
   type TableRow = {
     employeeId: string;
     firstName: string;
