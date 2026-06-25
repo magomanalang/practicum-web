@@ -125,9 +125,14 @@ export function EmployeesTable() {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            Click to View
-          </Button>
+          <>
+            <Button variant="link" size="sm">
+              Add Role
+            </Button>{" "}
+            <Button variant="link" size="sm">
+              Delete
+            </Button>
+          </>
         ),
       },
     ],

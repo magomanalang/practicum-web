@@ -1,13 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -25,87 +18,68 @@ import {
 import React from "react";
 import { useMemo } from "react";
 
-export function CustomersTable() {
+export function AuditLogsTable() {
   type TableRow = {
     id: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    suffix: string;
-    balance: number;
-    dateOfBirth: Date;
-    status: string;
+    type: string;
+    action: string;
+    performedBy: string;
+    performedAt: Date;
+    details: string;
+    oldValue: string;
+    newValue: string;
   };
 
   const [customers, setCustomers] = React.useState<TableRow[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    async function fetchCustomers() {
+    async function fetchAuditLogs() {
       setLoading(true);
       try {
-        const res = await fetch("/api/auth/get-customers");
+        const res = await fetch("/api/auth/get-audit-logs");
         if (res.ok) {
           const data = await res.json();
           setCustomers(data);
         }
       } catch (error) {
-        console.error("Failed to fetch customers:", error);
+        console.error("Failed to fetch Audit Logs:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchCustomers();
+    fetchAuditLogs();
   }, []);
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
       {
-        accessorFn: (row) =>
-          [row.firstName, row.middleName, row.lastName, row.suffix]
-            .filter(Boolean)
-            .join(" "),
-        id: "fullName",
-        header: "Full Name",
+        accessor_key: "type",
+        header: "Type",
       },
       {
-        accessorKey: "balance",
-        header: () => <div className="text-center">Balance</div>,
-        cell: ({ row }) => {
-          const amount = parseFloat(row.getValue("balance"));
-          const formatted = new Intl.NumberFormat("en-PH", {
-            style: "currency",
-            currency: "PHP",
-          }).format(amount);
-
-          return <div className="text-center font-medium">{formatted}</div>;
-        },
+        accessorKey: "action",
+        header: "Action",
       },
       {
-        accessorKey: "dateOfBirth",
-        header: "Date Of Birth",
+        accessorKey: "details",
+        header: "Details",
       },
       {
-        accessorKey: "status",
-        header: "Status",
+        accessorKey: "oldValue",
+        header: "Old Value",
       },
       {
-        id: "view",
-        header: "View",
-        cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            View Full Profile
-          </Button>
-        ),
+        accessorKey: "newValue",
+        header: "New Value",
       },
       {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            Click to View
-          </Button>
-        ),
+        accessorKey: "performedBy",
+        header: "Performed By",
+      },
+      {
+        accessorKey: "performedAt",
+        header: "Performed Date Time",
       },
     ],
     [],
@@ -123,8 +97,7 @@ export function CustomersTable() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Customer List</CardTitle>
-          <CardDescription>A list of all customers.</CardDescription>
+          <CardTitle>Audit Logs</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
