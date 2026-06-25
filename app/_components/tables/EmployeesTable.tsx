@@ -26,7 +26,7 @@ import {
 import React from "react";
 import { useMemo } from "react";
 
-export function CustomersTable() {
+export function EmployeesTable() {
   type TableRow = {
     employeeId: string;
     firstName: string;
@@ -34,7 +34,6 @@ export function CustomersTable() {
     lastName: string;
     suffix: string;
     email: string;
-    employeeRoles: string;
     requestType: string;
     createdBy: string;
     createdDateTime: Date;
@@ -47,7 +46,7 @@ export function CustomersTable() {
     async function fetchEmployeeRequests() {
       setLoading(true);
       try {
-        const res = await fetch("/api/auth/get-customers");
+        const res = await fetch("/api/auth/get-employee-requests");
         if (res.ok) {
           const data = await res.json();
           setEmployees(data);
@@ -74,10 +73,6 @@ export function CustomersTable() {
       {
         accessorKey: "email",
         header: "Email",
-      },
-      {
-        accessorKey: "employeeRoles",
-        header: "Roles to be Assigned",
       },
       {
         accessorKey: "createdBy",

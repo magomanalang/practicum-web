@@ -1,5 +1,7 @@
 "use client";
 
+import { EmployeeRolesReadable } from "@/app/_constants/employeeRoles";
+import { RequestTypeReadable } from "@/app/_constants/requestTypes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +28,7 @@ import {
 import React from "react";
 import { useMemo } from "react";
 
-export function EmployeeRequestsTable() {
+export function EmployeesRequestsTable() {
   type TableRow = {
     employeeId: string;
     firstName: string;
@@ -34,6 +36,7 @@ export function EmployeeRequestsTable() {
     lastName: string;
     suffix: string;
     email: string;
+    employeeRoles: string;
     requestType: string;
     createdBy: string;
     createdDateTime: Date;
@@ -52,7 +55,7 @@ export function EmployeeRequestsTable() {
           setEmployees(data);
         }
       } catch (error) {
-        console.error("Failed to fetch customers:", error);
+        console.error("Failed to fetch employee requests:", error);
       } finally {
         setLoading(false);
       }
@@ -75,6 +78,20 @@ export function EmployeeRequestsTable() {
         header: "Email",
       },
       {
+        accessorKey: "employeeRoles",
+        header: "Roles to be Assigned",
+        cell: ({ row }) => {
+          const rolesValue = row.getValue("employeeRoles") as string;
+          if (!rolesValue) {
+            return "No Roles";
+          }
+          return rolesValue
+            .split(",")
+            .map((role) => EmployeeRolesReadable(parseInt(role.trim(), 10)))
+            .join(", ");
+        },
+      },
+      {
         accessorKey: "createdBy",
         header: "Created By",
       },
@@ -86,8 +103,10 @@ export function EmployeeRequestsTable() {
         id: "requestType",
         header: "Request Type",
         cell: ({ row }) => (
-          <Badge variant="outline" color="primary">
-            {row.getValue("requestType")}
+          <Badge variant="outline">
+            {RequestTypeReadable(
+              parseInt(row.getValue("requestType") as string, 10),
+            )}
           </Badge>
         ),
       },
@@ -117,8 +136,10 @@ export function EmployeeRequestsTable() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Customer List</CardTitle>
-          <CardDescription>A list of all customers.</CardDescription>
+          <CardTitle>Employee Requests</CardTitle>
+          <CardDescription>
+            A list of all employee registration requests.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
