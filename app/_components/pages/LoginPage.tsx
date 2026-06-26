@@ -9,15 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 export function LoginForm({
   className,
@@ -41,22 +37,17 @@ export function LoginForm({
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: form.email,
-          password: form.password,
-        }),
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: form.email,
+        password: form.password,
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.message ?? "Something went wrong.");
-        return;
+      if (result?.error) {
+        setError("Invalid credentials.");
+      } else {
+        router.push("/dashboard");
       }
-
-      router.push("/dashboard");
     } catch {
       setError("Could not reach the server. Please try again.");
     } finally {
@@ -106,11 +97,8 @@ export function LoginForm({
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Field>
                 <Button type="submit" disabled={loading}>
-                  {loading ? "Creating customer..." : "Login"}
+                  {loading ? "Logging in..." : "Login"}
                 </Button>
-                <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="#">Sign up</a>
-                </FieldDescription>
               </Field>
             </FieldGroup>
           </form>

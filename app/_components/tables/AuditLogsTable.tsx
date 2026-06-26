@@ -1,13 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -25,93 +18,74 @@ import {
 import React from "react";
 import { useMemo } from "react";
 
-export function DocumentApprovalTable() {
+export function AuditLogsTable() {
   type TableRow = {
-    customer_id: string;
-    fullName: string;
-    country: string;
-    zipCode: string;
-    addressLine: string;
-    documentType: string;
-    documentImagePath: string;
-    submittedBy: string;
-    submittedAt: Date;
+    id: string;
+    type: string;
+    action: string;
+    performedBy: string;
+    performedAt: Date;
+    details: string;
+    oldValue: string;
+    newValue: string;
   };
 
-  const [documents, setDocuments] = React.useState<TableRow[]>([]);
+  const [customers, setCustomers] = React.useState<TableRow[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    async function fetchDocuments() {
+    async function fetchAuditLogs() {
       setLoading(true);
       try {
-        const res = await fetch("/api/auth/get-document-submissions");
+        const res = await fetch("/api/auth/get-audit-logs");
         if (res.ok) {
           const data = await res.json();
-          setDocuments(data);
+          setCustomers(data);
         }
       } catch (error) {
-        console.error("Failed to fetch document submissions:", error);
+        console.error("Failed to fetch Audit Logs:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchDocuments();
+    fetchAuditLogs();
   }, []);
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
       {
-        accessorKey: "fullName",
-        header: "Full Name",
+        accessor_key: "type",
+        header: "Type",
       },
       {
-        accessorKey: "country",
-        header: "Country",
+        accessorKey: "action",
+        header: "Action",
       },
       {
-        accessorKey: "zipCode",
-        header: "Zip Code",
+        accessorKey: "details",
+        header: "Details",
       },
       {
-        accessorKey: "addressLine",
-        header: "Address Line",
+        accessorKey: "oldValue",
+        header: "Old Value",
       },
       {
-        accessorKey: "documentType",
-        header: "Document Type",
+        accessorKey: "newValue",
+        header: "New Value",
       },
       {
-        accessorKey: "documentImagePath",
-        header: "Document Image Path",
+        accessorKey: "performedBy",
+        header: "Performed By",
       },
       {
-        accessorKey: "submittedBy",
-        header: "Submitted By",
-      },
-      {
-        accessorKey: "submittedAt",
-        header: "Submitted Date Time",
-      },
-      {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => (
-          <div className="flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm">
-              Approve
-            </Button>
-            <Button variant="destructive" size="sm">
-              Reject
-            </Button>
-          </div>
-        ),
+        accessorKey: "performedAt",
+        header: "Performed Date Time",
       },
     ],
     [],
   );
 
-  const data = useMemo(() => documents, [documents]);
+  const data = useMemo<TableRow[]>(() => customers, [customers]);
 
   const table = useReactTable({
     data,
@@ -123,8 +97,7 @@ export function DocumentApprovalTable() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Document Approval Requests</CardTitle>
-          <CardDescription>View Customers Requirements</CardDescription>
+          <CardTitle>Audit Logs</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -145,16 +118,7 @@ export function DocumentApprovalTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows?.length ? (
+              {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}

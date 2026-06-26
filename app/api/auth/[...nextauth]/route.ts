@@ -24,28 +24,38 @@ const handler = NextAuth({
             name: "Local Dev Admin",
             email: "admin@local.com",
             role: "admin",
+            employeeId: "DEV-ADMIN",
+            firstName: "Local Dev",
+            lastName: "Admin",
           };
         }
         try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                email: credentials.email,
-                password: credentials.password,
-              }),
-            },
-          );
+          const backendUrl = `${process.env.API_URL}/api/Employee/login-employee`;
+
+          const res = await fetch(backendUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              Email: credentials.email,
+              Password: credentials.password,
+            }),
+          });
 
           if (!res.ok) {
             console.error(`Backend returned status code: ${res.status}`);
             return null;
           }
           const user = await res.json();
+
           if (user) {
-            return user;
+            return {
+              id: user.id,
+              email: user.email,
+              employeeId: user.employeeId,
+              firstName: user.firstName || user.FirstName,
+              lastName: user.lastName || user.LastName,
+              role: user.employeeRoles?.[0] || "User",
+            };
           }
           return null;
         } catch (error) {
@@ -55,10 +65,34 @@ const handler = NextAuth({
       },
     }),
   ],
-
-  pages: {
-    signIn: "/login",
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.employeeId = user.employeeId;
+        token.email = user.email;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+        token.role = user.role;
+        token.name = `${user.firstName} ${user.lastName}`;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.employeeId = token.employeeId as string;
+        session.user.email = token.email as string;
+        session.user.firstName = token.firstName as string;
+        session.user.lastName = token.lastName as string;
+        session.user.role = token.role as string;
+        session.user.name = token.name as string;
+      }
+      return session;
+    },
   },
+  session: { strategy: "jwt" },
+  pages: { signIn: "/login" },
 });
 
 export { handler as GET, handler as POST };

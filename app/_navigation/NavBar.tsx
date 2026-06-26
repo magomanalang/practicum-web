@@ -1,9 +1,13 @@
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { SidebarTemplate } from "./Sidebar";
 
 export default function Navbar() {
-  useSession();
+  const { data: session } = useSession();
+
+  const handleLogOut = () => {
+    signOut();
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
@@ -45,19 +49,29 @@ export default function Navbar() {
             >
               Application
             </a>
+            <a
+              href="/signup"
+              className="text-sm font-medium hover:text-green-700 transition-colors"
+            >
+              Register Customer
+            </a>
           </div>
 
           <div className="flex items-center">
-            <Link href="/login">
-              <button className="mr-2 rounded-lg px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-50 hover:text-green-950 transition-all">
-                Log In
+            {session ? (
+              <button
+                onClick={handleLogOut}
+                className="mr-2 rounded-lg px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-50 hover:text-green-950 transition-all"
+              >
+                Sign Out
               </button>
-            </Link>
-            <Link href="/signup">
-              <button className="rounded-lg bg-green-950 px-4 py-2 text-sm font-medium text-white hover:bg-green-900 transition-all">
-                Register Customer
-              </button>
-            </Link>
+            ) : (
+              <Link href="/login">
+                <button className="mr-2 rounded-lg px-4 py-2 text-sm font-medium text-green-900 hover:bg-green-50 hover:text-green-950 transition-all">
+                  Log In
+                </button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

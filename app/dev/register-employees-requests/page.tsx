@@ -1,5 +1,5 @@
-import { UserLoanHistory } from "@/app/_components/tables/HistoryTable";
+import { EmployeeRequestsTable } from "@/app/_components/tables/EmployeeRequestsTable";
 
 export default function Page() {
-  return <UserLoanHistory />;
+  return <EmployeeRequestsTable />;
 }

@@ -11,7 +11,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { NavSection } from "@/app/_navigation/NavSection";
-import { PanelLeftIcon, UserCircle, Home, Calculator } from "lucide-react";
+import { PanelLeftIcon, UserCircle, Calculator } from "lucide-react";
 import { Database, GitMerge, LayoutList, ShieldCheck, Tag } from "lucide-react";
 
 export const appLinks = [
@@ -42,13 +42,13 @@ export const approverLinks = [
 ];
 
 export const devAdminLinks = [
-  { href: "/dev/products", label: "Manage Products", icon: LayoutList },
+  { href: "/products", label: "Manage Products", icon: LayoutList },
   {
-    href: "/dev/products-requests",
+    href: "/approver/products-requests",
     label: "Manage Product Requests",
     icon: Database,
   },
-  { href: "/dev/roles", label: "Employees Table", icon: ShieldCheck },
+  { href: "/dev/employees", label: "Employees Table", icon: ShieldCheck },
   { href: "/dev/role-map", label: "Employee Roles", icon: GitMerge },
   {
     href: "/dev/role-map-requests",
@@ -74,10 +74,11 @@ const isDev = process.env.NODE_ENV === "development";
 
 export function SidebarTemplate() {
   const { data: session } = useSession();
-
-  const displayName = session?.user?.name
-    ? session.user.name.split(" ")[0]
-    : "Guest";
+  console.log("CURRENT ACTIVE SESSION STATE:", session);
+  const user = session?.user;
+  const displayName = user?.employeeId || "Guest";
+  const fullName =
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") || "Admin";
 
   return (
     <Sheet>
@@ -92,12 +93,9 @@ export function SidebarTemplate() {
         className="w-75 sm:w-100 max-h-screen overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {" "}
-        <SheetHeader className="border-b pb-4">
-          <SheetTitle className="flex items-center gap-2">
-            <Home className="h-5 w-5 text-blue-600" />
-            <span>{displayName}</span>
-          </SheetTitle>
-          <SheetDescription>test</SheetDescription>
+        <SheetHeader className="border-b pb-4 text-left">
+          <SheetTitle>{fullName}</SheetTitle>
+          <SheetDescription>{displayName}</SheetDescription>
         </SheetHeader>
         <nav className="flex flex-col gap-2 mt-6">
           <NavSection links={appLinks} />
@@ -116,11 +114,6 @@ export function SidebarTemplate() {
             </>
           )}
         </nav>
-        <div className="absolute bottom-6 left-6 right-6 border-t pt-4">
-          <p className="text-xs text-muted-foreground text-center">
-            Version 1.0.2
-          </p>
-        </div>
       </SheetContent>
     </Sheet>
   );

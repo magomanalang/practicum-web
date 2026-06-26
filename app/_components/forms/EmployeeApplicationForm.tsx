@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
 import EmployeeRolesDropDown from "../dropdowns/EmployeeRolesDropDown";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -50,14 +49,16 @@ export function EmployeeApplicationForm({
     );
     const firstInitial = form.firstName[0].toUpperCase();
     const lastInitial = form.middleName[0].toUpperCase();
-    const year = new Date().getFullYear();
-    const generatedEmployeeId = `${firstInitial}${lastInitial}${year}0001`;
+    const yearString = String(new Date().getFullYear());
+    const generatedEmployeeId =
+      firstInitial + lastInitial + yearString + "0001";
+    const generatedEmail = `${form.firstName}${lastInitial}${yearString}@gmail.com`;
 
-    const generatedPassword = `${form.firstName}${year}`;
-    const generatedEmail = `${form.firstName}${lastInitial}${year}@gmail.com`;
+
     const dateTimeNow = toFormattedPhDateTime();
     const sessionUser = session?.user?.email || "Admin";
-
+    
+    console.log("DEBUG: Generated Employee ID:", generatedEmployeeId);
     try {
       const res = await fetch("/api/add-employee-request", {
         method: "POST",
@@ -68,7 +69,7 @@ export function EmployeeApplicationForm({
           LastName: form.lastName,
           Suffix: form.suffix,
           Email: generatedEmail,
-          Password: generatedPassword,
+          Password: generatedEmployeeId,
           EmployeeId: generatedEmployeeId,
           EmployeeRoles: backendNumericRoles,
           CreatedDateTime: dateTimeNow,

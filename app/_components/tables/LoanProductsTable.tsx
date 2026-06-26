@@ -25,93 +25,90 @@ import {
 import React from "react";
 import { useMemo } from "react";
 
-export function DocumentApprovalTable() {
+export function LoansTable() {
   type TableRow = {
-    customer_id: string;
-    fullName: string;
-    country: string;
-    zipCode: string;
-    addressLine: string;
-    documentType: string;
-    documentImagePath: string;
-    submittedBy: string;
-    submittedAt: Date;
+    id: string;
+    customerId: string;
+    name: string;
+    loanProductId: string;
+    loanName: string;
+    description: string;
+    amount: number;
+    interestRate: string;
+    status: string;
+    startDate: Date;
+    endDate: Date;
+    approvedBy: string;
+    approvedDate: Date;
   };
 
-  const [documents, setDocuments] = React.useState<TableRow[]>([]);
+  const [loans, setLoans] = React.useState<TableRow[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    async function fetchDocuments() {
+    async function fetchCustomers() {
       setLoading(true);
       try {
-        const res = await fetch("/api/auth/get-document-submissions");
+        const res = await fetch("/api/get-loans");
         if (res.ok) {
           const data = await res.json();
-          setDocuments(data);
+          setLoans(data);
         }
       } catch (error) {
-        console.error("Failed to fetch document submissions:", error);
+        console.error("Failed to fetch loans list:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchDocuments();
+    fetchCustomers();
   }, []);
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
       {
-        accessorKey: "fullName",
-        header: "Full Name",
+        accessorKey: "balance",
+        header: () => <div className="text-center">Balance</div>,
+        cell: ({ row }) => {
+          const amount = parseFloat(row.getValue("balance"));
+          const formatted = new Intl.NumberFormat("en-PH", {
+            style: "currency",
+            currency: "PHP",
+          }).format(amount);
+
+          return <div className="text-center font-medium">{formatted}</div>;
+        },
       },
       {
-        accessorKey: "country",
-        header: "Country",
+        accessorKey: "dateOfBirth",
+        header: "Date Of Birth",
       },
       {
-        accessorKey: "zipCode",
-        header: "Zip Code",
+        accessorKey: "status",
+        header: "Status",
       },
       {
-        accessorKey: "addressLine",
-        header: "Address Line",
-      },
-      {
-        accessorKey: "documentType",
-        header: "Document Type",
-      },
-      {
-        accessorKey: "documentImagePath",
-        header: "Document Image Path",
-      },
-      {
-        accessorKey: "submittedBy",
-        header: "Submitted By",
-      },
-      {
-        accessorKey: "submittedAt",
-        header: "Submitted Date Time",
+        id: "view",
+        header: "View",
+        cell: ({ row }) => (
+          <Button variant="link" size="sm">
+            View Full Profile
+          </Button>
+        ),
       },
       {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <div className="flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm">
-              Approve
-            </Button>
-            <Button variant="destructive" size="sm">
-              Reject
-            </Button>
-          </div>
+          <Button variant="link" size="sm">
+            Click to View
+          </Button>
         ),
       },
     ],
     [],
   );
 
-  const data = useMemo(() => documents, [documents]);
+  const data = useMemo<TableRow[]>(() => loans, [loans]);
 
   const table = useReactTable({
     data,
@@ -123,8 +120,8 @@ export function DocumentApprovalTable() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Document Approval Requests</CardTitle>
-          <CardDescription>View Customers Requirements</CardDescription>
+          <CardTitle>Loans List</CardTitle>
+          <CardDescription>A list of all current Loans.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -145,16 +142,7 @@ export function DocumentApprovalTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : table.getRowModel().rows?.length ? (
+              {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
