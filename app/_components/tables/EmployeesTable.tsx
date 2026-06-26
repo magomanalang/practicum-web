@@ -161,6 +161,14 @@ export function EmployeesTable() {
         header: "Created Date Time",
       },
       {
+        accessorKey: "approvedBy",
+        header: "Approved By",
+      },
+      {
+        accessorKey: "approvedDateTime",
+        header: "Approved Date Time",
+      },
+      {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
