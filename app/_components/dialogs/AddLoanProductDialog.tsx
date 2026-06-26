@@ -89,7 +89,6 @@ export function LoanProductFormDialog({
     setError(null);
 
     try {
-        
       const toLoanCategory = LoanCategoriesToValueMap[form.loanCategory] ?? 0;
 
       const payload = {

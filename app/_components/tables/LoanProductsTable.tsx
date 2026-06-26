@@ -49,7 +49,7 @@ export function LoanProductsTable() {
     async function fetchCustomers() {
       setLoading(true);
       try {
-        const res = await fetch("/api/get-loan-products");
+        const res = await fetch("/api/auth/get-loan-products");
         if (res.ok) {
           const data = await res.json();
           setLoans(data);
