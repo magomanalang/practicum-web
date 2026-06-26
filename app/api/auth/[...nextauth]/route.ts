@@ -55,6 +55,7 @@ const handler = NextAuth({
               firstName: user.firstName || user.FirstName,
               lastName: user.lastName || user.LastName,
               role: user.employeeRoles?.[0] || "User",
+              accessToken: user.token,
             };
           }
           return null;
@@ -75,6 +76,7 @@ const handler = NextAuth({
         token.lastName = user.lastName;
         token.role = user.role;
         token.name = `${user.firstName} ${user.lastName}`;
+        token.accessToken = user.accessToken;
       }
       return token;
     },
@@ -87,6 +89,7 @@ const handler = NextAuth({
         session.user.lastName = token.lastName as string;
         session.user.role = token.role as string;
         session.user.name = token.name as string;
+        session.accessToken = token.accessToken as string;
       }
       return session;
     },

@@ -50,7 +50,7 @@ export function LoanProductRequestsTable() {
     async function fetchLoanProductRequests() {
       setLoading(true);
       try {
-        const res = await fetch("/api/get-loan-product-requests");
+        const res = await fetch("/api/auth/get-loan-product-requests");
         if (res.ok) {
           const data = await res.json();
           setLoanProductRequests(data);
