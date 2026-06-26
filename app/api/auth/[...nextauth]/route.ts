@@ -24,6 +24,9 @@ const handler = NextAuth({
             name: "Local Dev Admin",
             email: "admin@local.com",
             role: "admin",
+            employeeId: "DEV-ADMIN",
+            firstName: "Local Dev",
+            lastName: "Admin",
           };
         }
         try {
@@ -44,13 +47,14 @@ const handler = NextAuth({
           }
           const user = await res.json();
 
-          console.log("--- DEBUG BACKEND RESPONSE ---", user);
-
-          if (user && user.exists) {
+          if (user) {
             return {
-              id: user.employeeId,
-              email: credentials.email,
+              id: user.id.toString(),
+              email: user.email,
               employeeId: user.employeeId,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              role: user.employeeRoles?.[0] || "User",
             };
           }
           return null;
@@ -61,12 +65,34 @@ const handler = NextAuth({
       },
     }),
   ],
-  session: {
-    strategy: "jwt",
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.employeeId = user.employeeId;
+        token.email = user.email;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+        token.role = user.role;
+        token.name = `${user.firstName} ${user.lastName}`;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.employeeId = token.employeeId as string;
+        session.user.email = token.email as string;
+        session.user.firstName = token.firstName as string;
+        session.user.lastName = token.lastName as string;
+        session.user.role = token.role as string;
+        session.user.name = token.name as string;
+      }
+      return session;
+    },
   },
-  pages: {
-    signIn: "/login",
-  },
+  session: { strategy: "jwt" },
+  pages: { signIn: "/login" },
 });
 
 export { handler as GET, handler as POST };

@@ -75,10 +75,8 @@ const isDev = process.env.NODE_ENV === "development";
 export function SidebarTemplate() {
   const { data: session } = useSession();
 
-  const displayName = session?.user?.name
-    ? session.user.name.split(" ")[0]
-    : "Guest";
-
+  const displayName = session?.user?.firstName || "Guest";
+  
   return (
     <Sheet>
       <SheetTrigger asChild>
