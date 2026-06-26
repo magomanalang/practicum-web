@@ -3,8 +3,10 @@
 import {
   EmployeeRolesReadable,
   RoleNameToValueMap,
+  EmployeeRolesReadable, RoleNameToValueMap
 } from "@/app/_constants/employeeRoles";
 import { RequestTypeReadable } from "@/app/_constants/requestTypes";
+import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +32,8 @@ import {
 } from "@tanstack/react-table";
 import React from "react";
 import { useMemo } from "react";
+import React, { useMemo } from "react";
+import { useSession } from "next-auth/react";
 
 export function EmployeesTable() {
   type TableRow = {
@@ -47,7 +51,63 @@ export function EmployeesTable() {
   };
 
   const [employees, setEmployees] = React.useState<TableRow[]>([]);
+  const { data: session } = useSession();
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [success, setSuccess] = React.useState<string | null>(null);
+
+  async function handleDeleteEmployee(e: React.FormEvent) {
+  const handleDeleteEmployee = async (employee: TableRow) => {
+    setSuccess(null);
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/delete-employee-request", {
+      const res = await fetch("/api/add-employee-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          FirstName: row.firstName,
+          MiddleName: row.middleName,
+          LastName: row.lastName,
+          Suffix: row.suffix,
+          Email: row.email,
+          Password: row.password,
+          EmployeeId: row.employeeId,
+          EmployeeRoles: row.employeeRoles,
+          FirstName: employee.firstName,
+          MiddleName: employee.middleName,
+          LastName: employee.lastName,
+          Suffix: employee.suffix,
+          Email: employee.email,
+          EmployeeId: employee.employeeId,
+          EmployeeRoles: employee.employeeRoles,
+          RequestType: "Delete",
+          CreatedDateTime: row.createdDateTime,
+          CreatedBy: row.createdBy,
+          ApprovedBy: session?.user?.email || "Admin",
+          ApprovedDateTime: toFormattedPhDateTime(),
+          CreatedDateTime: toFormattedPhDateTime(),
+          CreatedBy: session?.user?.email || "Admin",
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.message ?? "Something went wrong.");
+        return;
+      } else {
+        setSuccess("Employee delete request submitted successfully for approval!");
+      }
+
+      setSuccess("Employee request submitted successfully for approval!");
+    } catch (err) {
+      setError("Could not reach the server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+  };
 
   React.useEffect(() => {
     async function fetchEmployeeRequests() {
@@ -68,6 +128,7 @@ export function EmployeesTable() {
   }, []);
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
+  const columns = useMemo<ColumnDef<TableRow>[]>( // eslint-disable-next-line react-hooks/exhaustive-deps
     () => [
       { accessorKey: "employeeId", header: "Employee ID" },
       {
@@ -129,7 +190,12 @@ export function EmployeesTable() {
             <Button variant="link" size="sm">
               Add Role
             </Button>{" "}
-            <Button variant="link" size="sm">
+            <Button
+              variant="link"
+              size="sm"
+              onClick={handleDeleteEmployee(row)}
+              onClick={() => handleDeleteEmployee(row.original)}
+            >
               Delete
             </Button>
           </>
@@ -137,6 +203,8 @@ export function EmployeesTable() {
       },
     ],
     [],
+    ], // eslint-disable-next-line react-hooks/exhaustive-deps
+    [session]
   );
 
   const data = useMemo<TableRow[]>(() => employees, [employees]);
@@ -152,6 +220,16 @@ export function EmployeesTable() {
     <>
       <Card>
         <CardHeader>
+          {success && (
+            <div className="p-3 text-sm font-medium text-green-600 bg-green-50 dark:bg-green-950/30 rounded-md border border-green-200 dark:border-green-900/50">
+              {success}
+            </div>
+          )}
+          {error && (
+            <div className="p-3 text-sm font-medium text-red-500 bg-red-50 dark:bg-red-950/30 rounded-md border border-red-200 dark:border-red-900/50">
+              {error}
+            </div>
+          )}
           <CardTitle>Customer List</CardTitle>
           <CardDescription>A list of all customers.</CardDescription>
         </CardHeader>

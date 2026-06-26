@@ -42,9 +42,9 @@ export const approverLinks = [
 ];
 
 export const devAdminLinks = [
-  { href: "/dev/products", label: "Manage Products", icon: LayoutList },
+  { href: "/products", label: "Manage Products", icon: LayoutList },
   {
-    href: "/dev/products-requests",
+    href: "/approver/products-requests",
     label: "Manage Product Requests",
     icon: Database,
   },
