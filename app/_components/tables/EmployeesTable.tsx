@@ -3,11 +3,8 @@
 import {
   EmployeeRolesReadable,
   RoleNameToValueMap,
-  EmployeeRolesReadable, RoleNameToValueMap
 } from "@/app/_constants/employeeRoles";
-import { RequestTypeReadable } from "@/app/_constants/requestTypes";
 import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,8 +27,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React from "react";
-import { useMemo } from "react";
 import React, { useMemo } from "react";
 import { useSession } from "next-auth/react";
 
@@ -56,25 +51,15 @@ export function EmployeesTable() {
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
 
-  async function handleDeleteEmployee(e: React.FormEvent) {
   const handleDeleteEmployee = async (employee: TableRow) => {
     setSuccess(null);
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("/api/delete-employee-request", {
       const res = await fetch("/api/add-employee-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          FirstName: row.firstName,
-          MiddleName: row.middleName,
-          LastName: row.lastName,
-          Suffix: row.suffix,
-          Email: row.email,
-          Password: row.password,
-          EmployeeId: row.employeeId,
-          EmployeeRoles: row.employeeRoles,
           FirstName: employee.firstName,
           MiddleName: employee.middleName,
           LastName: employee.lastName,
@@ -83,10 +68,6 @@ export function EmployeesTable() {
           EmployeeId: employee.employeeId,
           EmployeeRoles: employee.employeeRoles,
           RequestType: "Delete",
-          CreatedDateTime: row.createdDateTime,
-          CreatedBy: row.createdBy,
-          ApprovedBy: session?.user?.email || "Admin",
-          ApprovedDateTime: toFormattedPhDateTime(),
           CreatedDateTime: toFormattedPhDateTime(),
           CreatedBy: session?.user?.email || "Admin",
         }),
@@ -95,18 +76,16 @@ export function EmployeesTable() {
       if (!res.ok) {
         const data = await res.json();
         setError(data.message ?? "Something went wrong.");
-        return;
       } else {
-        setSuccess("Employee delete request submitted successfully for approval!");
+        setSuccess(
+          "Employee delete request submitted successfully for approval!",
+        );
       }
-
-      setSuccess("Employee request submitted successfully for approval!");
-    } catch (err) {
+    } catch {
       setError("Could not reach the server. Please try again.");
     } finally {
       setLoading(false);
     }
-  }
   };
 
   React.useEffect(() => {
@@ -127,7 +106,6 @@ export function EmployeesTable() {
     fetchEmployeeRequests();
   }, []);
 
-  const columns = useMemo<ColumnDef<TableRow>[]>(
   const columns = useMemo<ColumnDef<TableRow>[]>( // eslint-disable-next-line react-hooks/exhaustive-deps
     () => [
       { accessorKey: "employeeId", header: "Employee ID" },
@@ -193,7 +171,6 @@ export function EmployeesTable() {
             <Button
               variant="link"
               size="sm"
-              onClick={handleDeleteEmployee(row)}
               onClick={() => handleDeleteEmployee(row.original)}
             >
               Delete
@@ -201,10 +178,8 @@ export function EmployeesTable() {
           </>
         ),
       },
-    ],
-    [],
     ], // eslint-disable-next-line react-hooks/exhaustive-deps
-    [session]
+    [session],
   );
 
   const data = useMemo<TableRow[]>(() => employees, [employees]);
@@ -230,8 +205,8 @@ export function EmployeesTable() {
               {error}
             </div>
           )}
-          <CardTitle>Customer List</CardTitle>
-          <CardDescription>A list of all customers.</CardDescription>
+          <CardTitle>Employee List</CardTitle>
+          <CardDescription>A list of all Employees.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
