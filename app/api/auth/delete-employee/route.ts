@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export async function DELETE(request: Request) {
+export default async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -13,7 +13,7 @@ export async function DELETE(request: Request) {
     }
 
     const res = await fetch(
-      `${process.env.API_URL}/api/EmployeeRequest/delete-employee-request?id=${id}`,
+      `${process.env.API_URL}/api/EmployeeRequest/delete-employee?id=${id}`,
       {
         method: "DELETE",
       },

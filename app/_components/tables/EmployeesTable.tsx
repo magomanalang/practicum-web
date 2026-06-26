@@ -29,6 +29,7 @@ import {
 } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 import { useSession } from "next-auth/react";
+import { RequestTypes } from "@/app/_constants/requestTypes";
 
 export function EmployeesTable() {
   type TableRow = {
@@ -38,6 +39,7 @@ export function EmployeesTable() {
     lastName: string;
     suffix: string;
     email: string;
+    password: string;
     employeeRoles: number[];
     createdBy: string;
     createdDateTime: Date;
@@ -65,9 +67,10 @@ export function EmployeesTable() {
           LastName: employee.lastName,
           Suffix: employee.suffix,
           Email: employee.email,
+          Password: employee.password,
           EmployeeId: employee.employeeId,
           EmployeeRoles: employee.employeeRoles,
-          RequestType: "Delete",
+          RequestType: RequestTypes.Remove,
           CreatedDateTime: toFormattedPhDateTime(),
           CreatedBy: session?.user?.email || "Admin",
         }),

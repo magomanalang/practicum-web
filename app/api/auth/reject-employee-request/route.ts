@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(request: Request) {
   try {
-
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -28,7 +27,6 @@ export async function DELETE(request: Request) {
       );
     }
 
-    // 4. Return successful response back to your React client
     const data = await res.json();
     return NextResponse.json(data, { status: 200 });
   } catch (e) {

@@ -4,7 +4,10 @@ import {
   EmployeeRolesReadable,
   RoleNameToValueMap,
 } from "@/app/_constants/employeeRoles";
-import { RequestTypeReadable } from "@/app/_constants/requestTypes";
+import {
+  RequestTypeReadable,
+  RequestTypes,
+} from "@/app/_constants/requestTypes";
 import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -115,40 +118,62 @@ export function EmployeeRequestsTable() {
       setError(null);
       setSuccess(null);
       const dateTimeNow = toFormattedPhDateTime();
-      try {
-        const res = await fetch("/api/auth/register-employee", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            FirstName: employee.firstName,
-            MiddleName: employee.middleName,
-            LastName: employee.lastName,
-            Suffix: employee.suffix,
-            Email: employee.email,
-            Password: employee.password,
-            EmployeeId: employee.employeeId,
-            EmployeeRoles: employee.employeeRoles,
-            CreatedDateTime: employee.createdDateTime,
-            CreatedBy: employee.createdBy,
-            ApprovedBy: session?.user?.email || "Admin",
-            ApprovedDateTime: dateTimeNow,
-          }),
-        });
 
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.message ?? "Something went wrong.");
+      if (String(employee.requestType) === String(RequestTypes.Add)) {
+        try {
+          const res = await fetch("/api/auth/register-employee", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              FirstName: employee.firstName,
+              MiddleName: employee.middleName,
+              LastName: employee.lastName,
+              Suffix: employee.suffix,
+              Email: employee.email,
+              Password: employee.password,
+              EmployeeId: employee.employeeId,
+              EmployeeRoles: employee.employeeRoles,
+              CreatedDateTime: employee.createdDateTime,
+              CreatedBy: employee.createdBy,
+              ApprovedBy: session?.user?.email || "Admin",
+              ApprovedDateTime: dateTimeNow,
+            }),
+          });
+
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message ?? "Something went wrong.");
+          }
+
+          setSuccess("Employee registration request approved!");
+          setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+          deleteEmployeeRequest(employee.id);
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "Could not reach the server.",
+          );
+        } finally {
+          setLoading(false);
         }
+      } else {
+        try {
+          const res = await fetch("/api/auth/delete-employee", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ Id: employee.id }),
+          });
 
-        setSuccess("Employee registration request approved!");
-        setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
-        deleteEmployeeRequest(employee.id);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Could not reach the server.",
-        );
-      } finally {
-        setLoading(false);
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message ?? "Something went wrong.");
+          }
+
+          setSuccess("Employee deletion request approved!");
+          setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
+          deleteEmployeeRequest(employee.id);
+        } finally {
+          setLoading(false);
+        }
       }
     },
     [session?.user?.email, deleteEmployeeRequest],
