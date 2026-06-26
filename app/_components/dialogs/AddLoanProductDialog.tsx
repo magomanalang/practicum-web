@@ -89,21 +89,22 @@ export function LoanProductFormDialog({
     setError(null);
 
     try {
-      const toLoanCategory = LoanCategoriesToValueMap[form.loanCategory];
+        
+      const toLoanCategory = LoanCategoriesToValueMap[form.loanCategory] ?? 0;
 
       const payload = {
-        name: form.name,
-        description: form.description,
-        loanCategory: toLoanCategory,
-        interestRate: parseFloat(form.interestRate),
-        maximumAmount: parseFloat(form.maximumAmount),
-        minimumAmount: parseFloat(form.minimumAmount),
-        minimumTermMonths: parseInt(form.minimumTermMonths, 10),
-        maximumTermMonths: parseInt(form.maximumTermMonths, 10),
-
-        requestType: RequestTypes.Add,
-        createdBy: session?.user?.email || "Admin",
-        createdDateTime: toFormattedPhDateTime(),
+        Name: form.name,
+        Description: form.description,
+        LoanCategory: toLoanCategory,
+        InterestRate: parseFloat(form.interestRate),
+        MaximumAmount: parseFloat(form.maximumAmount),
+        MinimumAmount: parseFloat(form.minimumAmount),
+        MinimumTermMonths: parseInt(form.minimumTermMonths, 10),
+        MaximumTermMonths: parseInt(form.maximumTermMonths, 10),
+        IsPromotion: form.isPromotion || false,
+        RequestType: RequestTypes.Add,
+        CreatedBy: session?.user?.email || "Admin",
+        CreatedDateTime: toFormattedPhDateTime(),
       };
 
       const res = await fetch("/api/auth/add-loan-product-request", {
