@@ -21,6 +21,7 @@ export async function POST(request: Request) {
         MaximumTermMonths: body.maximumTermMonths,
         MinimumAmount: body.minimumAmount,
         MinimumTermMonths: body.minimumTermMonths,
+        RequestType: body.requestType,
         CreatedBy: body.createdBy,
         CreatedDateTime: body.createdDateTime,
       }),
