@@ -49,11 +49,11 @@ const handler = NextAuth({
 
           if (user) {
             return {
-              id: user.id.toString(),
+              id: user.id,
               email: user.email,
               employeeId: user.employeeId,
-              firstName: user.firstName,
-              lastName: user.lastName,
+              firstName: user.firstName || user.FirstName,
+              lastName: user.lastName || user.LastName,
               role: user.employeeRoles?.[0] || "User",
             };
           }
