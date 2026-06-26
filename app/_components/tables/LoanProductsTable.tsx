@@ -65,7 +65,6 @@ export function LoansTable() {
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
-
       {
         accessorKey: "balance",
         header: () => <div className="text-center">Balance</div>,
@@ -109,7 +108,7 @@ export function LoansTable() {
     [],
   );
 
-  const data = useMemo<TableRow[]>(() => customers, [customers]);
+  const data = useMemo<TableRow[]>(() => loans, [loans]);
 
   const table = useReactTable({
     data,
@@ -121,8 +120,8 @@ export function LoansTable() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Customer List</CardTitle>
-          <CardDescription>A list of all customers.</CardDescription>
+          <CardTitle>Loans List</CardTitle>
+          <CardDescription>A list of all current Loans.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>

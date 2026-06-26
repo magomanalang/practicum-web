@@ -106,7 +106,7 @@ export function EmployeesTable() {
     fetchEmployeeRequests();
   }, []);
 
-  const columns = useMemo<ColumnDef<TableRow>[]>( // eslint-disable-next-line react-hooks/exhaustive-deps
+  const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
       { accessorKey: "employeeId", header: "Employee ID" },
       {
@@ -184,7 +184,6 @@ export function EmployeesTable() {
 
   const data = useMemo<TableRow[]>(() => employees, [employees]);
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
