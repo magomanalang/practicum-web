@@ -7,6 +7,7 @@ import {
 import {
   RequestTypeReadable,
   RequestTypes,
+  RequestTypeToValueMap,
 } from "@/app/_constants/requestTypes";
 import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
 import { Badge } from "@/components/ui/badge";
@@ -118,7 +119,10 @@ export function EmployeeRequestsTable() {
       setError(null);
       setSuccess(null);
       const dateTimeNow = toFormattedPhDateTime();
-      const requestTypeNum = Number(employee.requestType);
+      const requestTypeNum =
+        typeof employee.requestType === "string"
+          ? RequestTypeToValueMap[employee.requestType]
+          : Number(employee.requestType);
 
       if (requestTypeNum === RequestTypes.Add) {
         try {
