@@ -66,34 +66,44 @@ export function LoansTable() {
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
       {
-        accessorKey: "balance",
-        header: () => <div className="text-center">Balance</div>,
-        cell: ({ row }) => {
-          const amount = parseFloat(row.getValue("balance"));
-          const formatted = new Intl.NumberFormat("en-PH", {
-            style: "currency",
-            currency: "PHP",
-          }).format(amount);
-
-          return <div className="text-center font-medium">{formatted}</div>;
-        },
+        accessorKey: "name",
+        header: "Customer Name",
       },
       {
-        accessorKey: "dateOfBirth",
-        header: "Date Of Birth",
+        accessorKey: "loanName",
+        header: "Loan Product",
       },
       {
-        accessorKey: "status",
+        accessorKey: "description",
+        header: "Description",
+      },
+      {
+        id: "amount",
+        header: "Amount",
+      },
+      {
+        id: "interest",
+        header: "Interest",
+      },
+      {
+        id: "status",
         header: "Status",
       },
       {
-        id: "view",
-        header: "View",
-        cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            View Full Profile
-          </Button>
-        ),
+        id: "startDate",
+        header: "Start Date",
+      },
+      {
+        id: "endDate",
+        header: "End Date",
+      },
+      {
+        id: "approvedBy",
+        header: "Approved By",
+      },
+      {
+        id: "approvedDate",
+        header: "Approved Date",
       },
       {
         id: "actions",

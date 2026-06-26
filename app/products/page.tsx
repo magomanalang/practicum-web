@@ -1,5 +1,5 @@
-import { AuditLogsTable } from "../_components/tables/AuditLogsTable";
+import { LoanProductsTable } from "../_components/tables/LoanProductsTable";
 
 export default function Page() {
-  return <AuditLogsTable />;
+  return <LoanProductsTable />;
 }

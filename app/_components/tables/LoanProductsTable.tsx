@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -67,43 +66,52 @@ export function LoanProductsTable() {
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
       {
-        accessorKey: "balance",
-        header: () => <div className="text-center">Balance</div>,
-        cell: ({ row }) => {
-          const amount = parseFloat(row.getValue("balance"));
-          const formatted = new Intl.NumberFormat("en-PH", {
-            style: "currency",
-            currency: "PHP",
-          }).format(amount);
-
-          return <div className="text-center font-medium">{formatted}</div>;
-        },
+        accessorKey: "name",
+        header: "Product Name",
       },
       {
-        accessorKey: "dateOfBirth",
-        header: "Date Of Birth",
+        accessorKey: "description",
+        header: "Description",
       },
       {
-        accessorKey: "status",
-        header: "Status",
+        accessorKey: "loanCategory",
+        header: "Category",
       },
       {
-        id: "view",
-        header: "View",
-        cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            View Full Profile
-          </Button>
-        ),
+        accessorKey: "minimumAmount",
+        header: "Minimum Amount",
       },
       {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            Click to View
-          </Button>
-        ),
+        accessorKey: "maximumAmount",
+        header: "Maximum Amount",
+      },
+      {
+        accessorKey: "minimumTermMonths",
+        header: "Minimum Term (Months)",
+      },
+      {
+        accessorKey: "maximumTermMonths",
+        header: "Maximum Term (Months)",
+      },
+      {
+        accessorKey: "isPromotion",
+        header: "PROMO",
+      },
+      {
+        accessorKey: "createdBy",
+        header: "Created By",
+      },
+      {
+        accessorKey: "createdDateTime",
+        header: "Created Date Time",
+      },
+      {
+        accessorKey: "approvedBy",
+        header: "Approved By",
+      },
+      {
+        accessorKey: "approvedDateTime",
+        header: "Approved Date Time",
       },
     ],
     [],
@@ -121,8 +129,8 @@ export function LoanProductsTable() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Loans List</CardTitle>
-          <CardDescription>A list of all current Loans.</CardDescription>
+          <CardTitle>Products List</CardTitle>
+          <CardDescription>A list of products.</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
