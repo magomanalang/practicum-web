@@ -27,25 +27,31 @@ const handler = NextAuth({
           };
         }
         try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                email: credentials.email,
-                password: credentials.password,
-              }),
-            },
-          );
+          const backendUrl = `${process.env.API_URL}/api/Employee/login-employee`;
+
+          const res = await fetch(backendUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              Email: credentials.email,
+              Password: credentials.password,
+            }),
+          });
 
           if (!res.ok) {
             console.error(`Backend returned status code: ${res.status}`);
             return null;
           }
           const user = await res.json();
-          if (user) {
-            return user;
+
+          console.log("--- DEBUG BACKEND RESPONSE ---", user);
+
+          if (user && user.exists) {
+            return {
+              id: user.employeeId,
+              email: credentials.email,
+              employeeId: user.employeeId,
+            };
           }
           return null;
         } catch (error) {
@@ -55,7 +61,9 @@ const handler = NextAuth({
       },
     }),
   ],
-
+  session: {
+    strategy: "jwt",
+  },
   pages: {
     signIn: "/login",
   },
