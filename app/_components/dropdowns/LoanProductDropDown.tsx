@@ -39,7 +39,7 @@ export default function LoanProductDropDown({
   React.useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await fetch("/api/loan-products");
+        const res = await fetch("/api/get-loan-products");
         if (res.ok) {
           const data = await res.json();
           setProducts(data);
