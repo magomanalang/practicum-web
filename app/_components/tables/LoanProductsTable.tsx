@@ -25,19 +25,20 @@ import {
 import React from "react";
 import { useMemo } from "react";
 
-export function LoansTable() {
+export function LoanProductsTable() {
   type TableRow = {
     id: string;
-    customerId: string;
     name: string;
-    loanProductId: string;
-    loanName: string;
     description: string;
-    amount: number;
+    loan_category: string;
     interestRate: string;
-    status: string;
-    startDate: Date;
-    endDate: Date;
+    minimumAmount: number;
+    maximumAmount: number;
+    minimumTermMonths: number;
+    maximumTermMonths: number;
+    isPromotion: boolean;
+    createdBy: string;
+    createdDateTime: Date;
     approvedBy: string;
     approvedDate: Date;
   };

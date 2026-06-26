@@ -25,34 +25,35 @@ import {
 import React from "react";
 import { useMemo } from "react";
 
-export function LoansTable() {
+export function LoanProductRequestsTable() {
   type TableRow = {
     id: string;
-    customerId: string;
     name: string;
-    loanProductId: string;
-    loanName: string;
     description: string;
-    amount: number;
+    loan_category: string;
     interestRate: string;
-    status: string;
-    startDate: Date;
-    endDate: Date;
-    approvedBy: string;
-    approvedDate: Date;
+    minimumAmount: number;
+    maximumAmount: number;
+    minimumTermMonths: number;
+    maximumTermMonths: number;
+    isPromotion: boolean;
+    createdBy: string;
+    createdDateTime: Date;
   };
 
-  const [loans, setLoans] = React.useState<TableRow[]>([]);
+  const [loanProductRequests, setLoanProductRequests] = React.useState<
+    TableRow[]
+  >([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    async function fetchCustomers() {
+    async function fetchLoanProductRequests() {
       setLoading(true);
       try {
-        const res = await fetch("/api/get-loans");
+        const res = await fetch("/api/get-loan-product-requests");
         if (res.ok) {
           const data = await res.json();
-          setLoans(data);
+          setLoanProductRequests(data);
         }
       } catch (error) {
         console.error("Failed to fetch loans list:", error);
@@ -60,55 +61,78 @@ export function LoansTable() {
         setLoading(false);
       }
     }
-    fetchCustomers();
+    fetchLoanProductRequests();
   }, []);
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
       {
-        accessorKey: "balance",
-        header: () => <div className="text-center">Balance</div>,
-        cell: ({ row }) => {
-          const amount = parseFloat(row.getValue("balance"));
-          const formatted = new Intl.NumberFormat("en-PH", {
-            style: "currency",
-            currency: "PHP",
-          }).format(amount);
-
-          return <div className="text-center font-medium">{formatted}</div>;
-        },
+        accessorKey: "name",
+        header: "Name",
       },
       {
-        accessorKey: "dateOfBirth",
-        header: "Date Of Birth",
+        accessorKey: "description",
+        header: "Description",
       },
       {
-        accessorKey: "status",
-        header: "Status",
+        accessorKey: "loan_category",
+        header: "Category",
       },
       {
-        id: "view",
-        header: "View",
-        cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            View Full Profile
-          </Button>
-        ),
+        accessorKey: "interestRate",
+        header: "Interest Rate",
+      },
+      {
+        accessorKey: "minimumAmount",
+        header: "Min. Amount",
+      },
+      {
+        accessorKey: "maximumAmount",
+        header: "Max. Amount",
+      },
+      {
+        accessorKey: "minimumTermMonths",
+        header: "Min. Term",
+      },
+      {
+        accessorKey: "maximumTermMonths",
+        header: "Max. Term",
+      },
+      {
+        accessorKey: "isPromotion",
+        header: "Promotion",
+        cell: ({ row }) => (row.getValue("isPromotion") ? "Yes" : "No"),
+      },
+      {
+        accessorKey: "createdBy",
+        header: "Created By",
+      },
+      {
+        accessorKey: "createdDateTime",
+        header: "Created At",
       },
       {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            Click to View
-          </Button>
+          <>
+            <Button variant="outline" size="sm">
+              Approve
+            </Button>
+            <Button variant="destructive" size="sm" className="ml-2">
+              Reject
+            </Button>
+          </>
         ),
       },
     ],
     [],
   );
 
-  const data = useMemo<TableRow[]>(() => loans, [loans]);
+  const data = useMemo<TableRow[]>(
+    () => loanProductRequests,
+    [loanProductRequests],
+  );
 
   const table = useReactTable({
     data,
@@ -120,8 +144,10 @@ export function LoansTable() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Loans List</CardTitle>
-          <CardDescription>A list of all current Loans.</CardDescription>
+          <CardTitle>Loan Product Requests List</CardTitle>
+          <CardDescription>
+            A list of all current Loan Product Requests.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
