@@ -1,23 +1,21 @@
 import { NextResponse } from "next/server";
 
-export default async function DELETE(request: Request) {
+export async function DELETE(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const { EmployeeId, Email } = await request.json();
 
-    if (!id) {
+    if (!EmployeeId || !Email) {
       return NextResponse.json(
-        { message: "Missing required 'id' parameter" },
+        { message: "Missing credentials in request body" },
         { status: 400 },
       );
     }
 
-    const res = await fetch(
-      `${process.env.API_URL}/api/EmployeeRequest/delete-employee?id=${id}`,
-      {
-        method: "DELETE",
-      },
-    );
+    const targetUrl = `${process.env.API_URL}/api/Employee/delete-employee?employeeId=${encodeURIComponent(EmployeeId)}&email=${encodeURIComponent(Email)}`;
+
+    const res = await fetch(targetUrl, {
+      method: "DELETE",
+    });
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -27,12 +25,16 @@ export default async function DELETE(request: Request) {
       );
     }
 
+    if (res.status === 204) {
+      return new NextResponse(null, { status: 204 });
+    }
+
     const data = await res.json();
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json(data, { status: res.status });
   } catch (e) {
     console.error("Proxy error:", e);
     return NextResponse.json(
-      { message: "Backend unreachable" },
+      { message: "Backend unreachable or invalid request body" },
       { status: 502 },
     );
   }

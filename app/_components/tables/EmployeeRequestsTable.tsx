@@ -118,8 +118,9 @@ export function EmployeeRequestsTable() {
       setError(null);
       setSuccess(null);
       const dateTimeNow = toFormattedPhDateTime();
+      const requestTypeNum = Number(employee.requestType);
 
-      if (String(employee.requestType) === String(RequestTypes.Add)) {
+      if (requestTypeNum === RequestTypes.Add) {
         try {
           const res = await fetch("/api/auth/register-employee", {
             method: "POST",
@@ -145,9 +146,9 @@ export function EmployeeRequestsTable() {
             throw new Error(data.message ?? "Something went wrong.");
           }
 
-          setSuccess("Employee registration request approved!");
           setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
           deleteEmployeeRequest(employee.id);
+          setSuccess("Employee registration request approved!");
         } catch (err) {
           setError(
             err instanceof Error ? err.message : "Could not reach the server.",
@@ -160,17 +161,26 @@ export function EmployeeRequestsTable() {
           const res = await fetch("/api/auth/delete-employee", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ Id: employee.id }),
+            body: JSON.stringify({
+              EmployeeId: employee.employeeId,
+              Email: employee.email,
+            }),
           });
 
           if (!res.ok) {
             const data = await res.json();
-            throw new Error(data.message ?? "Something went wrong.");
+            throw new Error(data?.message ?? "Something went wrong.");
           }
 
-          setSuccess("Employee deletion request approved!");
           setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
           deleteEmployeeRequest(employee.id);
+          setSuccess("Employee deletion request approved!");
+        } catch (err) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Could not approve deletion request.",
+          );
         } finally {
           setLoading(false);
         }
