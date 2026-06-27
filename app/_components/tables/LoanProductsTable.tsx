@@ -1,5 +1,9 @@
 "use client";
 
+import { LoanCategoriesToValueMap } from "@/app/_constants/loanCategories";
+import { RequestTypes } from "@/app/_constants/requestTypes";
+import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -21,6 +25,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useSession } from "next-auth/react";
 import React from "react";
 import { useMemo } from "react";
 
@@ -29,7 +34,7 @@ export function LoanProductsTable() {
     id: string;
     name: string;
     description: string;
-    loan_category: string;
+    loanCategory: string;
     interestRate: string;
     minimumAmount: number;
     maximumAmount: number;
@@ -42,25 +47,72 @@ export function LoanProductsTable() {
     approvedDate: Date;
   };
 
-  const [loans, setLoans] = React.useState<TableRow[]>([]);
+  const [loanProducts, setLoanProducts] = React.useState<TableRow[]>([]);
   const [loading, setLoading] = React.useState(true);
 
+  const { data: session } = useSession();
+  const [error, setError] = React.useState<string | null>(null);
+  const [success, setSuccess] = React.useState<string | null>(null);
+
+  const handleDeleteLoanProduct = async (loanProducts: TableRow) => {
+    setSuccess(null);
+    setError(null);
+    setLoading(true);
+    try {
+      const dateTimeNow = toFormattedPhDateTime();
+      const toLoanCategory =
+        LoanCategoriesToValueMap[loanProducts.loanCategory] ?? 0;
+
+      const res = await fetch("/api/add-loan-product-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Name: loanProducts.name,
+          Description: loanProducts.description,
+          LoanCategory: toLoanCategory,
+          InterestRate: loanProducts.interestRate,
+          MinimumAmount: loanProducts.minimumAmount,
+          MaximumAmount: loanProducts.maximumAmount,
+          MinimumTermMonths: loanProducts.minimumTermMonths,
+          MaximumTermMonths: loanProducts.maximumTermMonths,
+          IsPromotion: loanProducts.isPromotion,
+          RequestType: RequestTypes.Remove,
+          CreatedBy: session?.user?.email || "Admin",
+          CreatedDateTime: dateTimeNow,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.message ?? "Something went wrong.");
+      } else {
+        setSuccess(
+          "Employee delete request submitted successfully for approval!",
+        );
+      }
+    } catch {
+      setError("Could not reach the server. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   React.useEffect(() => {
-    async function fetchCustomers() {
+    async function fetchLoanProducts() {
       setLoading(true);
       try {
         const res = await fetch("/api/auth/get-loan-products");
         if (res.ok) {
           const data = await res.json();
-          setLoans(data);
+          setLoanProducts(data);
         }
       } catch (error) {
-        console.error("Failed to fetch loans list:", error);
+        console.error("Failed to fetch loan products list:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchCustomers();
+    fetchLoanProducts();
   }, []);
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
@@ -113,11 +165,29 @@ export function LoanProductsTable() {
         accessorKey: "approvedDateTime",
         header: "Approved Date Time",
       },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <>
+            <Button variant="link" size="sm">
+              Edit Value
+            </Button>{" "}
+            <Button
+              variant="link"
+              size="sm"
+              onClick={() => handleDeleteLoanProduct(row.original)}
+            >
+              Delete
+            </Button>
+          </>
+        ),
+      },
     ],
     [],
   );
 
-  const data = useMemo<TableRow[]>(() => loans, [loans]);
+  const data = useMemo<TableRow[]>(() => loanProducts, [loanProducts]);
 
   const table = useReactTable({
     data,

@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  RequestTypeReadable,
+  RequestTypes,
+  RequestTypeToValueMap,
+} from "@/app/_constants/requestTypes";
+import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,7 +29,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React from "react";
+import { useSession } from "next-auth/react";
+import React, { useCallback } from "react";
 import { useMemo } from "react";
 
 export function LoanProductRequestsTable() {
@@ -37,6 +45,7 @@ export function LoanProductRequestsTable() {
     minimumTermMonths: number;
     maximumTermMonths: number;
     isPromotion: boolean;
+    requestType: string;
     createdBy: string;
     createdDateTime: Date;
   };
@@ -45,6 +54,9 @@ export function LoanProductRequestsTable() {
     TableRow[]
   >([]);
   const [loading, setLoading] = React.useState(true);
+  const { data: session } = useSession();
+  const [error, setError] = React.useState<string | null>(null);
+  const [success, setSuccess] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     async function fetchLoanProductRequests() {
@@ -63,6 +75,136 @@ export function LoanProductRequestsTable() {
     }
     fetchLoanProductRequests();
   }, []);
+
+  const handleRejectClick = useCallback(async (id: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/auth/reject-loan-product-request?id=${id}`,
+        {
+          method: "DELETE",
+        },
+      );
+      if (res.ok) {
+        setLoanProductRequests((prevLoanProductRequests) =>
+          prevLoanProductRequests.filter(
+            (loanProductRequests) => loanProductRequests.id !== id,
+          ),
+        );
+      }
+    } catch (error) {
+      console.error("Failed to reject loan product request:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const deleteLoanProductRequest = useCallback(async (id: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/auth/delete-loan-product-request?id=${id}`,
+        {
+          method: "DELETE",
+        },
+      );
+      if (res.ok) {
+        setLoanProductRequests((prevLoanProducts) =>
+          prevLoanProducts.filter((loanProducts) => loanProducts.id !== id),
+        );
+      }
+    } catch (error) {
+      console.error("Failed to delete employee request:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleApproveClick = useCallback(
+    async (loanProductRequest: TableRow) => {
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
+      const dateTimeNow = toFormattedPhDateTime();
+      const requestTypeNum =
+        typeof loanProductRequest.requestType === "string"
+          ? RequestTypeToValueMap[loanProductRequest.requestType]
+          : Number(loanProductRequest.requestType);
+
+      if (requestTypeNum === RequestTypes.Add) {
+        try {
+          const res = await fetch("/api/auth/add-loan-product", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              Name: loanProductRequest.name,
+              Description: loanProductRequest.description,
+              LoanCategory: loanProductRequest.loan_category,
+              InterestRate: loanProductRequest.interestRate,
+              MinimumAmount: loanProductRequest.minimumAmount,
+              MaximumAmount: loanProductRequest.maximumAmount,
+              MinimumTermMonths: loanProductRequest.minimumTermMonths,
+              MaximumTermMonths: loanProductRequest.maximumTermMonths,
+              IsPromotion: loanProductRequest.isPromotion,
+              CreatedBy: loanProductRequest.createdBy,
+              CreatedDateTime: loanProductRequest.createdDateTime,
+              ApprovedBy: session?.user?.email || "Admin",
+              ApprovedDateTime: dateTimeNow,
+            }),
+          });
+
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.message ?? "Something went wrong.");
+          }
+
+          setLoanProductRequests((prev) =>
+            prev.filter((lp) => lp.id !== loanProductRequest.id),
+          );
+          deleteLoanProductRequest(loanProductRequest.id);
+          setSuccess("Loan Product registration quest approved!");
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "Could not reach the server.",
+          );
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        try {
+          const res = await fetch("/api/auth/delete-loan-product", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              Name: loanProductRequest.name,
+              Description: loanProductRequest.description,
+              LoanCategory: loanProductRequest.loan_category,
+            }),
+          });
+
+          if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data?.message ?? "Something went wrong.");
+          }
+
+          setLoanProductRequests((prev) =>
+            prev.filter((lp) => lp.id !== loanProductRequest.id),
+          );
+          deleteLoanProductRequest(loanProductRequest.id);
+          setSuccess("Loan Product deletion request approved!");
+        } catch (err) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Could not approve deletion request.",
+          );
+        } finally {
+          setLoading(false);
+        }
+      }
+    },
+    [session?.user?.email, deleteLoanProductRequest],
+  );
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
@@ -112,21 +254,50 @@ export function LoanProductRequestsTable() {
         header: "Created At",
       },
       {
+        id: "requestType",
+        header: "Request Type",
+        cell: ({ row }) => {
+          const rawType = row.original.requestType;
+
+          const parsedType =
+            typeof rawType === "string" && !isNaN(Number(rawType))
+              ? parseInt(rawType, 10)
+              : rawType;
+
+          return (
+            <Badge variant="outline">
+              {typeof parsedType === "number"
+                ? RequestTypeReadable(parsedType)
+                : String(rawType)}
+            </Badge>
+          );
+        },
+      },
+      {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
           <>
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleApproveClick(row.original)}
+            >
               Approve
             </Button>
-            <Button variant="destructive" size="sm" className="ml-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              className="ml-2"
+              onClick={() => handleRejectClick(row.original.id)}
+            >
               Reject
             </Button>
           </>
         ),
       },
     ],
-    [],
+    [handleApproveClick],
   );
 
   const data = useMemo<TableRow[]>(
