@@ -1,5 +1,6 @@
 "use client";
 
+import { LoanCategoriesToValueMap } from "@/app/_constants/loanCategories";
 import {
   RequestTypeReadable,
   RequestTypes,
@@ -38,7 +39,7 @@ export function LoanProductRequestsTable() {
     id: string;
     name: string;
     description: string;
-    loan_category: string;
+    loanCategory: string;
     interestRate: string;
     minimumAmount: number;
     maximumAmount: number;
@@ -139,7 +140,7 @@ export function LoanProductRequestsTable() {
             body: JSON.stringify({
               Name: loanProductRequest.name,
               Description: loanProductRequest.description,
-              LoanCategory: loanProductRequest.loan_category,
+              LoanCategory: loanProductRequest.loanCategory,
               InterestRate: loanProductRequest.interestRate,
               MinimumAmount: loanProductRequest.minimumAmount,
               MaximumAmount: loanProductRequest.maximumAmount,
@@ -178,7 +179,6 @@ export function LoanProductRequestsTable() {
             body: JSON.stringify({
               Name: loanProductRequest.name,
               Description: loanProductRequest.description,
-              LoanCategory: loanProductRequest.loan_category,
             }),
           });
 

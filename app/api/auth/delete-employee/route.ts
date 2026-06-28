@@ -31,6 +31,7 @@ export async function DELETE(request: Request) {
 
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
+    
   } catch (e) {
     console.error("Proxy error:", e);
     return NextResponse.json(

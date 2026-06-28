@@ -26,8 +26,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useSession } from "next-auth/react";
-import React from "react";
+import React, { useCallback } from "react";
 import { useMemo } from "react";
+import { UpdateLoanProductDialog } from "../dialogs/UpdateLoanProductDialog";
 
 export function LoanProductsTable() {
   type TableRow = {
@@ -49,53 +50,70 @@ export function LoanProductsTable() {
 
   const [loanProducts, setLoanProducts] = React.useState<TableRow[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = React.useState(false);
+  const [selectedLoanProduct, setSelectedLoanProduct] =
+    React.useState<TableRow | null>(null);
+  const [tableKey, setTableKey] = React.useState(0);
 
   const { data: session } = useSession();
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
 
-  const handleDeleteLoanProduct = async (loanProducts: TableRow) => {
-    setSuccess(null);
-    setError(null);
-    setLoading(true);
-    try {
-      const dateTimeNow = toFormattedPhDateTime();
-      const toLoanCategory =
-        LoanCategoriesToValueMap[loanProducts.loanCategory] ?? 0;
-
-      const res = await fetch("/api/add-loan-product-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          Name: loanProducts.name,
-          Description: loanProducts.description,
-          LoanCategory: toLoanCategory,
-          InterestRate: loanProducts.interestRate,
-          MinimumAmount: loanProducts.minimumAmount,
-          MaximumAmount: loanProducts.maximumAmount,
-          MinimumTermMonths: loanProducts.minimumTermMonths,
-          MaximumTermMonths: loanProducts.maximumTermMonths,
-          IsPromotion: loanProducts.isPromotion,
-          RequestType: RequestTypes.Remove,
-          CreatedBy: session?.user?.email || "Admin",
-          CreatedDateTime: dateTimeNow,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.message ?? "Something went wrong.");
-      } else {
-        setSuccess(
-          "Employee delete request submitted successfully for approval!",
-        );
-      }
-    } catch {
-      setError("Could not reach the server. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const handleSuccess = () => {
+    setTableKey((prevKey) => prevKey + 1);
+    setIsUpdateDialogOpen(false);
   };
+
+  const handleEditLoanProduct = useCallback((loanProduct: TableRow) => {
+    setSelectedLoanProduct(loanProduct);
+    setIsUpdateDialogOpen(true);
+  }, []);
+
+  const handleDeleteLoanProduct = useCallback(
+    async (loanProducts: TableRow) => {
+      setSuccess(null);
+      setError(null);
+      setLoading(true);
+      try {
+        const dateTimeNow = toFormattedPhDateTime();
+        const toLoanCategory =
+          LoanCategoriesToValueMap[loanProducts.loanCategory] ?? 0;
+
+        const res = await fetch("/api/auth/add-loan-product-request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            Name: loanProducts.name,
+            Description: loanProducts.description,
+            LoanCategory: toLoanCategory,
+            InterestRate: loanProducts.interestRate,
+            MinimumAmount: loanProducts.minimumAmount,
+            MaximumAmount: loanProducts.maximumAmount,
+            MinimumTermMonths: loanProducts.minimumTermMonths,
+            MaximumTermMonths: loanProducts.maximumTermMonths,
+            IsPromotion: loanProducts.isPromotion,
+            RequestType: RequestTypes.Remove,
+            CreatedBy: session?.user?.email || "Admin",
+            CreatedDateTime: dateTimeNow,
+          }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          setError(data.message ?? "Something went wrong.");
+        } else {
+          setSuccess(
+            "Employee delete request submitted successfully for approval!",
+          );
+        }
+      } catch {
+        setError("Could not reach the server. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [session?.user?.email],
+  );
 
   React.useEffect(() => {
     async function fetchLoanProducts() {
@@ -113,7 +131,7 @@ export function LoanProductsTable() {
       }
     }
     fetchLoanProducts();
-  }, []);
+  }, [tableKey]);
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
@@ -146,6 +164,10 @@ export function LoanProductsTable() {
         header: "Maximum Term (Months)",
       },
       {
+        accessorKey: "interestRate",
+        header: "Interest Rate (%)",
+      },
+      {
         accessorKey: "isPromotion",
         header: "PROMO",
       },
@@ -170,9 +192,13 @@ export function LoanProductsTable() {
         header: "Actions",
         cell: ({ row }) => (
           <>
-            <Button variant="link" size="sm">
+            <Button
+              variant="link"
+              size="sm"
+              onClick={() => handleEditLoanProduct(row.original)}
+            >
               Edit Value
-            </Button>{" "}
+            </Button>
             <Button
               variant="link"
               size="sm"
@@ -184,7 +210,7 @@ export function LoanProductsTable() {
         ),
       },
     ],
-    [],
+    [handleDeleteLoanProduct, handleEditLoanProduct],
   );
 
   const data = useMemo<TableRow[]>(() => loanProducts, [loanProducts]);
@@ -197,6 +223,12 @@ export function LoanProductsTable() {
 
   return (
     <>
+      <UpdateLoanProductDialog
+        loanProduct={selectedLoanProduct}
+        open={isUpdateDialogOpen}
+        onOpenChange={setIsUpdateDialogOpen}
+        onSuccess={handleSuccess}
+      />
       <Card>
         <CardHeader>
           <CardTitle>Products List</CardTitle>
