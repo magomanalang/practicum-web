@@ -1,6 +1,7 @@
 "use client";
 
 import { toFormattedDate } from "@/app/_helpers/FormattedDate";
+import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,10 +17,12 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
+  const { data: session } = useSession();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -50,6 +53,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           lastName: form.lastName,
           suffix: form.suffix,
           dateOfBirth: toFormattedDate(form.dateOfBirth),
+          createdBy: session?.user?.email || "Admin",
+          createdDateTime: toFormattedPhDateTime(),
         }),
       });
 

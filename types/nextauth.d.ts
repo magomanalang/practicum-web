@@ -9,7 +9,11 @@ declare module "next-auth" {
       email: string;
       firstName: string;
       lastName: string;
-      role: string;
+      employeeRoles: string[];
+      createdBy: string;
+      createdDateTime: Date;
+      approvedBy: string;
+      approvedDateTime: Date;
     } & DefaultSession["user"];
   }
 
@@ -19,7 +23,11 @@ declare module "next-auth" {
     email: string;
     firstName: string;
     lastName: string;
-    role: string;
+    employeeRoles: string[];
+    createdBy: string;
+    createdDateTime: Date;
+    approvedBy: string;
+    approvedDateTime: Date;
     accessToken?: string;
   }
 }
@@ -31,7 +39,11 @@ declare module "next-auth/jwt" {
     email: string;
     firstName: string;
     lastName: string;
-    role: string;
+    employeeRoles: string[];
+    createdBy: string;
+    createdDateTime: Date;
+    approvedBy: string;
+    approvedDateTime: Date;
     accessToken?: string;
   }
 }

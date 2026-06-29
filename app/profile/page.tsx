@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,19 +10,74 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo } from "react";
+import {
+  EmployeeRolesReadable,
+  EnumKeyToValueMap,
+  RoleNameToValueMap,
+} from "../_constants/employeeRoles";
 
 export default function Page() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const readableRoles = useMemo(() => {
+    const rolesValue = session?.user?.employeeRoles;
+    console.log("Raw employeeRoles data:", rolesValue);
+    if (!rolesValue) return [];
+
+    const rolesArray = [rolesValue]
+      .flat()
+      .filter((role) => role !== null && role !== undefined);
+
+    return rolesArray.map((role) => {
+      if (typeof role === "string") {
+        const enumValue = EnumKeyToValueMap[role] ?? RoleNameToValueMap[role];
+
+        return enumValue !== undefined
+          ? EmployeeRolesReadable(enumValue)
+          : role;
+      }
+
+      return EmployeeRolesReadable(role);
+    });
+  }, [session?.user?.employeeRoles]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!session || !session.user) {
+    return null;
+  }
+
+  const fullName = [session?.user?.firstName, session?.user?.lastName]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <div className="w-full min-h-screen px-4 py-8 flex flex-col items-center gap-6">
       <h1 className="text-3xl font-bold tracking-tight text-green-400">
         User Profile
       </h1>
-
-      {/* Profile Overview */}
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Profile Information</CardTitle>
-          <CardDescription>Your basic profile information.</CardDescription>
+          <CardDescription>
+            Your basic profile and account information.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <FieldGroup>
@@ -37,136 +94,98 @@ export default function Page() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field>
                 <FieldLabel>Full Name</FieldLabel>
-                <Input disabled value="Juan Dela Cruz" />
+                <Input disabled value={fullName} />
               </Field>
               <Field>
-                <FieldLabel>Username or ID</FieldLabel>
-                <Input disabled value="juandc_123" />
+                <FieldLabel>Employee ID</FieldLabel>
+                <Input disabled value={session.user.employeeId || "N/A"} />
               </Field>
               <Field>
                 <FieldLabel>Email address</FieldLabel>
-                <Input disabled value="juan@example.com" />
+                <Input disabled value={session.user.email || "N/A"} />
               </Field>
             </div>
           </FieldGroup>
         </CardContent>
       </Card>
 
-      {/* Personal Info */}
-      <Card className="w-full max-w-3xl">
-        <CardHeader>
-          <CardTitle>Personal Info</CardTitle>
-          <CardDescription>Your personal details.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field>
-                <FieldLabel>Phone number</FieldLabel>
-                <Input disabled value="+63 912 345 6789" />
-              </Field>
-              <Field>
-                <FieldLabel>Date of birth</FieldLabel>
-                <Input disabled value="01/01/1990" />
-              </Field>
-              <Field>
-                <FieldLabel>Gender</FieldLabel>
-                <Input disabled value="Male" />
-              </Field>
-              <Field>
-                <FieldLabel>Address / Location</FieldLabel>
-                <Input
-                  disabled
-                  value="123 Main St, Metro Manila, Philippines"
-                />
-              </Field>
-            </div>
-          </FieldGroup>
-        </CardContent>
-      </Card>
-
-      {/* Account & Security */}
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Account & Security</CardTitle>
-          <CardDescription>Manage your security settings.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field>
-                <FieldLabel>Password</FieldLabel>
-                <Input disabled type="password" value="********" />
-              </Field>
-              <Field>
-                <FieldLabel>Two-factor authentication (2FA)</FieldLabel>
-                <Input disabled value="Enabled (SMS)" />
-              </Field>
-              <Field>
-                <FieldLabel>Connected accounts</FieldLabel>
-                <Input disabled value="Google linked" />
-              </Field>
-              <Field>
-                <FieldLabel>Active sessions / devices</FieldLabel>
-                <Input disabled value="1 Active Session (Windows PC)" />
-              </Field>
-            </div>
-          </FieldGroup>
-        </CardContent>
-      </Card>
-
-      {/* Activity / Status */}
-      <Card className="w-full max-w-3xl">
-        <CardHeader>
-          <CardTitle>Activity & Status</CardTitle>
           <CardDescription>
-            Your account activity and verification status.
+            Your account roles and security settings.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <FieldGroup>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field>
-                <FieldLabel>Account status</FieldLabel>
-                <Input disabled value="Active & Verified" />
+                <FieldLabel>Account Roles</FieldLabel>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {readableRoles.length > 0 ? (
+                    readableRoles.map((roleName, index) => (
+                      <span
+                        key={`${roleName}-${index}`}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/30"
+                      >
+                        {roleName}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-sm text-gray-400 italic">
+                      No Roles Assigned
+                    </span>
+                  )}
+                </div>
               </Field>
               <Field>
-                <FieldLabel>Member since</FieldLabel>
-                <Input disabled value="August 2023" />
-              </Field>
-              <Field>
-                <FieldLabel>Last login</FieldLabel>
-                <Input disabled value="Today at 10:30 AM" />
-              </Field>
-              <Field>
-                <FieldLabel>Verification badge</FieldLabel>
-                <Input disabled value="Fully Verified" />
+                <FieldLabel>Password</FieldLabel>
+                <Input disabled type="password" value="********" />
               </Field>
             </div>
           </FieldGroup>
         </CardContent>
       </Card>
 
-      {/* Preferences */}
       <Card className="w-full max-w-3xl">
         <CardHeader>
-          <CardTitle>Preferences</CardTitle>
-          <CardDescription>App settings and notifications.</CardDescription>
+          <CardTitle>Activity & History</CardTitle>
+          <CardDescription>
+            Your account creation and approval history.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <FieldGroup>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field>
-                <FieldLabel>Notification preferences</FieldLabel>
-                <Input disabled value="Email & SMS Enabled" />
+                <FieldLabel>Account Created By</FieldLabel>
+                <Input disabled value={session.user.createdBy || "N/A"} />
               </Field>
               <Field>
-                <FieldLabel>Language / timezone</FieldLabel>
-                <Input disabled value="English (US) / UTC+8" />
+                <FieldLabel>Account Creation Date</FieldLabel>
+                <Input
+                  disabled
+                  value={
+                    session.user.createdDateTime
+                      ? new Date(session.user.createdDateTime).toLocaleString()
+                      : "N/A"
+                  }
+                />
               </Field>
               <Field>
-                <FieldLabel>Privacy settings</FieldLabel>
-                <Input disabled value="Standard" />
+                <FieldLabel>Approved By</FieldLabel>
+                <Input disabled value={session.user.approvedBy || "N/A"} />
+              </Field>
+              <Field>
+                <FieldLabel>Approval Date</FieldLabel>
+                <Input
+                  disabled
+                  value={
+                    session.user.approvedDateTime
+                      ? new Date(session.user.approvedDateTime).toLocaleString()
+                      : "N/A"
+                  }
+                />
               </Field>
             </div>
           </FieldGroup>
@@ -179,7 +198,7 @@ export default function Page() {
           <CardDescription>Log out or delete your account.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col sm:flex-row gap-4">
-          <Button disabled variant="outline">
+          <Button variant="outline" onClick={() => signOut()}>
             Logout
           </Button>
           <Button disabled variant="destructive">

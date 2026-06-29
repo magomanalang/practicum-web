@@ -40,3 +40,14 @@ export function EmployeeRolesReadable(
 ): string {
   return RoleDisplayNames[roleValue as EmployeeRoles] ?? "Unknown Role";
 }
+export const EnumKeyToValueMap: Record<string, number> = Object.entries(
+  EmployeeRoles,
+).reduce(
+  (acc, [key, value]) => {
+    if (typeof value === "number") {
+      acc[key] = value;
+    }
+    return acc;
+  },
+  {} as Record<string, number>,
+);

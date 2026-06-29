@@ -23,10 +23,14 @@ const handler = NextAuth({
             id: "dev-admin-id",
             name: "Local Dev Admin",
             email: "admin@local.com",
-            role: "admin",
+            employeeRoles: ["Admin"],
             employeeId: "DEV-ADMIN",
             firstName: "Local Dev",
             lastName: "Admin",
+            createdBy: "Admin",
+            createdDateTime: new Date(),
+            approvedBy: "Admin",
+            approvedDateTime: new Date(),
           };
         }
         try {
@@ -54,8 +58,12 @@ const handler = NextAuth({
               employeeId: user.employeeId,
               firstName: user.firstName || user.FirstName,
               lastName: user.lastName || user.LastName,
-              role: user.employeeRoles?.[0] || "User",
+              employeeRoles: user.employeeRoles || [],
               accessToken: user.token,
+              createdBy: user.createdBy || "Admin",
+              createdDateTime: user.createdDateTime,
+              approvedBy: user.approvedBy || "Admin",
+              approvedDateTime: user.approvedDateTime,
             };
           }
           return null;
@@ -74,8 +82,12 @@ const handler = NextAuth({
         token.email = user.email;
         token.firstName = user.firstName;
         token.lastName = user.lastName;
-        token.role = user.role;
+        token.employeeRoles = user.employeeRoles;
         token.name = `${user.firstName} ${user.lastName}`;
+        token.createdBy = user.createdBy;
+        token.createdDateTime = user.createdDateTime;
+        token.approvedBy = user.approvedBy;
+        token.approvedDateTime = user.approvedDateTime;
         token.accessToken = user.accessToken;
       }
       return token;
@@ -87,9 +99,13 @@ const handler = NextAuth({
         session.user.email = token.email as string;
         session.user.firstName = token.firstName as string;
         session.user.lastName = token.lastName as string;
-        session.user.role = token.role as string;
+        session.user.employeeRoles = token.employeeRoles as string[];
         session.user.name = token.name as string;
         session.accessToken = token.accessToken as string;
+        session.user.createdBy = token.createdBy as string;
+        session.user.createdDateTime = token.createdDateTime as Date;
+        session.user.approvedBy = token.approvedBy as string;
+        session.user.approvedDateTime = token.approvedDateTime as Date;
       }
       return session;
     },
