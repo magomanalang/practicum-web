@@ -22,6 +22,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useMemo } from "react";
 
@@ -102,9 +104,11 @@ export function CustomersTable() {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            Click to View
-          </Button>
+          <Link href={`/customers/${row.original.id}`}>
+            <Button variant="link" size="sm">
+              Click to View
+            </Button>
+          </Link>
         ),
       },
     ],

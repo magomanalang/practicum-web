@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  EmployeeRolesReadable,
-  RoleNameToValueMap,
-} from "@/app/_constants/employeeRoles";
+import { LoanCategoriesToValueMap } from "@/app/_constants/loanCategories";
 import {
   RequestTypeReadable,
   RequestTypes,
@@ -37,73 +34,84 @@ import { useSession } from "next-auth/react";
 import React, { useCallback } from "react";
 import { useMemo } from "react";
 
-export function EmployeeRequestsTable() {
+export function LoanProductRequestsTable() {
   type TableRow = {
     id: string;
-    employeeId: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    suffix: string;
-    email: string;
-    password?: string;
-    employeeRoles: number[];
+    name: string;
+    description: string;
+    loanCategory: string;
+    interestRate: string;
+    minimumAmount: number;
+    maximumAmount: number;
+    minimumTermMonths: number;
+    maximumTermMonths: number;
+    isPromotion: boolean;
     requestType: string;
     createdBy: string;
     createdDateTime: Date;
   };
 
-  const [employees, setEmployees] = React.useState<TableRow[]>([]);
-  const { data: session } = useSession();
+  const [loanProductRequests, setLoanProductRequests] = React.useState<
+    TableRow[]
+  >([]);
   const [loading, setLoading] = React.useState(true);
+  const { data: session } = useSession();
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    async function fetchEmployeeRequests() {
+    async function fetchLoanProductRequests() {
       setLoading(true);
       try {
-        const res = await fetch("/api/auth/get-employee-requests");
+        const res = await fetch("/api/auth/get-loan-product-requests");
         if (res.ok) {
           const data = await res.json();
-          setEmployees(data);
+          setLoanProductRequests(data);
         }
       } catch (error) {
-        console.error("Failed to fetch employee requests:", error);
+        console.error("Failed to fetch loans list:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchEmployeeRequests();
+    fetchLoanProductRequests();
   }, []);
 
   const handleRejectClick = useCallback(async (id: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/auth/reject-employee-request?id=${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/auth/reject-loan-product-request?id=${id}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (res.ok) {
-        setEmployees((prevEmployees) =>
-          prevEmployees.filter((employee) => employee.id !== id),
+        setLoanProductRequests((prevLoanProductRequests) =>
+          prevLoanProductRequests.filter(
+            (loanProductRequests) => loanProductRequests.id !== id,
+          ),
         );
       }
     } catch (error) {
-      console.error("Failed to reject employee request:", error);
+      console.error("Failed to reject loan product request:", error);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const deleteEmployeeRequest = useCallback(async (id: string) => {
+  const deleteLoanProductRequest = useCallback(async (id: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/auth/delete-employee-request?id=${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/auth/delete-loan-product-request?id=${id}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (res.ok) {
-        setEmployees((prevEmployees) =>
-          prevEmployees.filter((employee) => employee.id !== id),
+        setLoanProductRequests((prevLoanProducts) =>
+          prevLoanProducts.filter((loanProducts) => loanProducts.id !== id),
         );
       }
     } catch (error) {
@@ -114,32 +122,33 @@ export function EmployeeRequestsTable() {
   }, []);
 
   const handleApproveClick = useCallback(
-    async (employee: TableRow) => {
+    async (loanProductRequest: TableRow) => {
       setLoading(true);
       setError(null);
       setSuccess(null);
       const dateTimeNow = toFormattedPhDateTime();
       const requestTypeNum =
-        typeof employee.requestType === "string"
-          ? RequestTypeToValueMap[employee.requestType]
-          : Number(employee.requestType);
+        typeof loanProductRequest.requestType === "string"
+          ? RequestTypeToValueMap[loanProductRequest.requestType]
+          : Number(loanProductRequest.requestType);
 
       if (requestTypeNum === RequestTypes.Add) {
         try {
-          const res = await fetch("/api/auth/register-employee", {
+          const res = await fetch("/api/auth/add-loan-product", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              FirstName: employee.firstName,
-              MiddleName: employee.middleName,
-              LastName: employee.lastName,
-              Suffix: employee.suffix,
-              Email: employee.email,
-              Password: employee.password,
-              EmployeeId: employee.employeeId,
-              EmployeeRoles: employee.employeeRoles,
-              CreatedDateTime: employee.createdDateTime,
-              CreatedBy: employee.createdBy,
+              Name: loanProductRequest.name,
+              Description: loanProductRequest.description,
+              LoanCategory: loanProductRequest.loanCategory,
+              InterestRate: loanProductRequest.interestRate,
+              MinimumAmount: loanProductRequest.minimumAmount,
+              MaximumAmount: loanProductRequest.maximumAmount,
+              MinimumTermMonths: loanProductRequest.minimumTermMonths,
+              MaximumTermMonths: loanProductRequest.maximumTermMonths,
+              IsPromotion: loanProductRequest.isPromotion,
+              CreatedBy: loanProductRequest.createdBy,
+              CreatedDateTime: loanProductRequest.createdDateTime,
               ApprovedBy: session?.user?.email || "Admin",
               ApprovedDateTime: dateTimeNow,
             }),
@@ -150,9 +159,11 @@ export function EmployeeRequestsTable() {
             throw new Error(data.message ?? "Something went wrong.");
           }
 
-          setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
-          deleteEmployeeRequest(employee.id);
-          setSuccess("Employee registration request approved!");
+          setLoanProductRequests((prev) =>
+            prev.filter((lp) => lp.id !== loanProductRequest.id),
+          );
+          deleteLoanProductRequest(loanProductRequest.id);
+          setSuccess("Loan Product registration quest approved!");
         } catch (err) {
           setError(
             err instanceof Error ? err.message : "Could not reach the server.",
@@ -162,12 +173,12 @@ export function EmployeeRequestsTable() {
         }
       } else {
         try {
-          const res = await fetch("/api/auth/delete-employee", {
+          const res = await fetch("/api/auth/delete-loan-product", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              EmployeeId: employee.employeeId,
-              Email: employee.email,
+              Name: loanProductRequest.name,
+              Description: loanProductRequest.description,
             }),
           });
 
@@ -176,9 +187,11 @@ export function EmployeeRequestsTable() {
             throw new Error(data?.message ?? "Something went wrong.");
           }
 
-          setEmployees((prev) => prev.filter((e) => e.id !== employee.id));
-          deleteEmployeeRequest(employee.id);
-          setSuccess("Employee deletion request approved!");
+          setLoanProductRequests((prev) =>
+            prev.filter((lp) => lp.id !== loanProductRequest.id),
+          );
+          deleteLoanProductRequest(loanProductRequest.id);
+          setSuccess("Loan Product deletion request approved!");
         } catch (err) {
           setError(
             err instanceof Error
@@ -190,53 +203,47 @@ export function EmployeeRequestsTable() {
         }
       }
     },
-    [session?.user?.email, deleteEmployeeRequest],
+    [session?.user?.email, deleteLoanProductRequest],
   );
 
   const columns = useMemo<ColumnDef<TableRow>[]>(
     () => [
       {
-        accessorFn: (row) =>
-          [row.firstName, row.middleName, row.lastName, row.suffix]
-            .filter(Boolean)
-            .join(" "),
-        id: "fullName",
-        header: "Full Name",
+        accessorKey: "name",
+        header: "Name",
       },
       {
-        accessorKey: "email",
-        header: "Email",
+        accessorKey: "description",
+        header: "Description",
       },
       {
-        accessorKey: "employeeRoles",
-        header: "Roles to be Assigned",
-        cell: ({ row }) => {
-          const rolesValue = row.original.employeeRoles;
-
-          if (
-            !rolesValue ||
-            (Array.isArray(rolesValue) && rolesValue.length === 0)
-          ) {
-            return "No Roles";
-          }
-
-          const normalizedArray = Array.isArray(rolesValue)
-            ? rolesValue
-            : [rolesValue];
-
-          return normalizedArray
-            .map((role) => {
-              if (typeof role === "string") {
-                const matchedEnumIntValue = RoleNameToValueMap[role];
-                return matchedEnumIntValue !== undefined
-                  ? EmployeeRolesReadable(matchedEnumIntValue)
-                  : role;
-              }
-
-              return EmployeeRolesReadable(role);
-            })
-            .join(", ");
-        },
+        accessorKey: "loan_category",
+        header: "Category",
+      },
+      {
+        accessorKey: "interestRate",
+        header: "Interest Rate",
+      },
+      {
+        accessorKey: "minimumAmount",
+        header: "Min. Amount",
+      },
+      {
+        accessorKey: "maximumAmount",
+        header: "Max. Amount",
+      },
+      {
+        accessorKey: "minimumTermMonths",
+        header: "Min. Term",
+      },
+      {
+        accessorKey: "maximumTermMonths",
+        header: "Max. Term",
+      },
+      {
+        accessorKey: "isPromotion",
+        header: "Promotion",
+        cell: ({ row }) => (row.getValue("isPromotion") ? "Yes" : "No"),
       },
       {
         accessorKey: "createdBy",
@@ -244,10 +251,10 @@ export function EmployeeRequestsTable() {
       },
       {
         accessorKey: "createdDateTime",
-        header: "Created Date Time",
+        header: "Created At",
       },
       {
-        accessorKey: "requestType",
+        id: "requestType",
         header: "Request Type",
         cell: ({ row }) => {
           const rawType = row.original.requestType;
@@ -266,7 +273,6 @@ export function EmployeeRequestsTable() {
           );
         },
       },
-
       {
         id: "actions",
         header: "Actions",
@@ -280,8 +286,9 @@ export function EmployeeRequestsTable() {
               Approve
             </Button>
             <Button
-              variant="outline"
+              variant="destructive"
               size="sm"
+              className="ml-2"
               onClick={() => handleRejectClick(row.original.id)}
             >
               Reject
@@ -290,10 +297,13 @@ export function EmployeeRequestsTable() {
         ),
       },
     ],
-    [handleApproveClick, handleRejectClick],
+    [handleApproveClick],
   );
 
-  const data = useMemo<TableRow[]>(() => employees, [employees]);
+  const data = useMemo<TableRow[]>(
+    () => loanProductRequests,
+    [loanProductRequests],
+  );
 
   const table = useReactTable({
     data,
@@ -305,9 +315,9 @@ export function EmployeeRequestsTable() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Employee Requests</CardTitle>
+          <CardTitle>Loan Product Requests List</CardTitle>
           <CardDescription>
-            A list of all employee registration requests.
+            A list of all current Loan Product Requests.
           </CardDescription>
         </CardHeader>
         <CardContent>

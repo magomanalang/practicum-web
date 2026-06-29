@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
 import { RoleNameToValueMap } from "@/app/_constants/employeeRoles";
+import { RequestTypes } from "@/app/_constants/requestTypes";
 
 interface FormState {
   firstName: string;
@@ -54,10 +55,9 @@ export function EmployeeApplicationForm({
       firstInitial + lastInitial + yearString + "0001";
     const generatedEmail = `${form.firstName}${lastInitial}${yearString}@gmail.com`;
 
-
     const dateTimeNow = toFormattedPhDateTime();
     const sessionUser = session?.user?.email || "Admin";
-    
+
     console.log("DEBUG: Generated Employee ID:", generatedEmployeeId);
     try {
       const res = await fetch("/api/add-employee-request", {
@@ -72,6 +72,7 @@ export function EmployeeApplicationForm({
           Password: generatedEmployeeId,
           EmployeeId: generatedEmployeeId,
           EmployeeRoles: backendNumericRoles,
+          RequestType: RequestTypes.Add,
           CreatedDateTime: dateTimeNow,
           CreatedBy: sessionUser,
         }),

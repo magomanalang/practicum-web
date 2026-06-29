@@ -13,7 +13,7 @@ export async function DELETE(request: Request) {
     }
 
     const res = await fetch(
-      `${process.env.API_URL}/api/EmployeeRequest/delete-employee-request?id=${id}`,
+      `${process.env.API_URL}/api/LoanProductRequest/delete-loan-product-request?id=${id}`,
       {
         method: "DELETE",
       },

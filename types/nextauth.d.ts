@@ -2,13 +2,18 @@ import NextAuth, { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
   interface Session {
+    accessToken?: string;
     user: {
       id: string;
       employeeId: string;
       email: string;
       firstName: string;
       lastName: string;
-      role: string;
+      employeeRoles: string[];
+      createdBy: string;
+      createdDateTime: Date;
+      approvedBy: string;
+      approvedDateTime: Date;
     } & DefaultSession["user"];
   }
 
@@ -18,7 +23,12 @@ declare module "next-auth" {
     email: string;
     firstName: string;
     lastName: string;
-    role: string;
+    employeeRoles: string[];
+    createdBy: string;
+    createdDateTime: Date;
+    approvedBy: string;
+    approvedDateTime: Date;
+    accessToken?: string;
   }
 }
 
@@ -29,6 +39,11 @@ declare module "next-auth/jwt" {
     email: string;
     firstName: string;
     lastName: string;
-    role: string;
+    employeeRoles: string[];
+    createdBy: string;
+    createdDateTime: Date;
+    approvedBy: string;
+    approvedDateTime: Date;
+    accessToken?: string;
   }
 }
