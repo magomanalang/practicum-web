@@ -131,7 +131,7 @@ export function LoanProductFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Create Loan Product for Approval</DialogTitle>
           <DialogDescription>
