@@ -17,17 +17,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/card";
+} from "@/components/ui/table";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  flexRender,
+  useReactTable,
+} from "@tanstack/react-table";
 
 interface EmailDetail {
+  customerId: number;
   email: string;
+  createdBy: string;
+  createdDateTime: Date;
 }
 
 interface PhoneDetail {
   phoneNumber: string;
-  type: string;
+  // customerId: number;
+  // createdBy: string;
+  // createdDateTime: Date;
 }
 
 interface KycDetail {
@@ -38,11 +49,13 @@ interface KycDetail {
   documentImagePath: string;
   submittedBy: string;
   submittedAt: Date;
-  reviewedBy: string;
-  reviewedAt: Date;
+  // The backend response for KycDetail does not include `reviewedBy` or `reviewedAt`.
+  // fullName: string;
 }
 
 interface StatusHistoryDetail {
+  customerId: number;
+  customerName: string;
   beforeStatus: number;
   afterStatus: string;
   createdBy: string;
@@ -50,13 +63,16 @@ interface StatusHistoryDetail {
 }
 
 interface LoanHistoryDetail {
+  customerId: number;
+  loanId: number;
   loanAmount: number;
   status: string;
+  repaymentScheduleId: number;
   dueDate: string;
   createdBy: string;
   createdDateTime: Date;
   approvedBy: string;
-  approvedDateTime: Date;
+  approvedAt: Date;
 }
 
 interface CustomerProfile {
@@ -73,15 +89,49 @@ interface CustomerProfile {
   emailDetails: EmailDetail[];
   phoneDetails: PhoneDetail[];
   kycDetails: KycDetail[];
-  statusHistoryDetails: StatusHistoryDetail[];
-  loanHistoryDetails: LoanHistoryDetail[];
+  customerLoanHistory: LoanHistoryDetail[];
+  customerStatusHistory: StatusHistoryDetail[];
 }
+const columnHelper = createColumnHelper<StatusHistoryDetail>();
+
+const columns = [
+  columnHelper.accessor("customerId", {
+    header: "Customer Id",
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor("customerName", {
+    header: "Customer Name",
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor("beforeStatus", {
+    header: "From Status",
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor("afterStatus", {
+    header: "To Status",
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor("createdBy", {
+    header: "Changed By",
+    cell: (info) => info.getValue(),
+  }),
+  columnHelper.accessor("createdDateTime", {
+    header: "Date",
+    cell: (info) => new Date(info.getValue()).toLocaleString("en-PH"),
+  }),
+];
 
 export default function Page() {
   const { Id } = useParams<{ Id: string }>();
   const [customer, setCustomer] = useState<CustomerProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const table = useReactTable({
+    data: customer?.customerStatusHistory ?? [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   const fetchCustomer = useCallback(async (customerId: string) => {
     setLoading(true);
@@ -102,6 +152,7 @@ export default function Page() {
       console.log(data);
 
       setCustomer(data);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Failed to fetch customer profile:", err);
       setError(
@@ -164,7 +215,6 @@ export default function Page() {
     <div className="w-full min-h-screen px-4 py-8 flex flex-col items-center gap-6">
       <h1 className="text-3xl font-bold tracking-tight">Customer Profile</h1>
 
-      {/* Profile Information */}
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Profile Information</CardTitle>
@@ -189,7 +239,6 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      {/* Account Details */}
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Account Details</CardTitle>
@@ -226,7 +275,6 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      {/* Contact Details */}
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Contact Details</CardTitle>
@@ -250,11 +298,7 @@ export default function Page() {
                   <FieldLabel>Phone Number</FieldLabel>
                   <Input
                     disabled
-                    value={
-                      customer.phoneDetails?.[0]
-                        ? `${customer.phoneDetails[0].phoneNumber} (${customer.phoneDetails[0].type})`
-                        : "N/A"
-                    }
+                    value={customer.phoneDetails?.[0]?.phoneNumber ?? "N/A"}
                   />
                 </Field>
               </div>
@@ -265,7 +309,6 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      {/* KYC Information */}
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>KYC Information</CardTitle>
@@ -279,10 +322,7 @@ export default function Page() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field>
                   <FieldLabel>Address</FieldLabel>
-                  <Input
-                    disabled
-                    value={customer.kycDetails[0].addressLine}
-                  />
+                  <Input disabled value={customer.kycDetails[0].addressLine} />
                 </Field>
                 <Field>
                   <FieldLabel>Zip Code</FieldLabel>
@@ -297,10 +337,7 @@ export default function Page() {
                 </Field>
                 <Field>
                   <FieldLabel>Document Type</FieldLabel>
-                  <Input
-                    disabled
-                    value={customer.kycDetails[0].documentType}
-                  />
+                  <Input disabled value={customer.kycDetails[0].documentType} />
                 </Field>
               </div>
             </FieldGroup>
@@ -310,52 +347,66 @@ export default function Page() {
         </CardContent>
       </Card>
 
-      {/* Status History */}
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Status History</CardTitle>
           <CardDescription>Record of account status changes.</CardDescription>
         </CardHeader>
         <CardContent>
-          {customer.statusHistoryDetails &&
-          customer.statusHistoryDetails.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>From Status</TableHead>
-                  <TableHead>To Status</TableHead>
-                  <TableHead>Changed By</TableHead>
-                  <TableHead>Date</TableHead>
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  ))}
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {customer.statusHistoryDetails.map((history, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{history.beforeStatus}</TableCell>
-                    <TableCell>{history.afterStatus}</TableCell>
-                    <TableCell>{history.createdBy}</TableCell>
-                    <TableCell>
-                      {new Date(history.createdDateTime).toLocaleString()}
-                    </TableCell>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <p className="text-gray-500">No status history found.</p>
-          )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No status history found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
 
-      {/* Loan History */}
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Loan History</CardTitle>
           <CardDescription>Record of past loans.</CardDescription>
         </CardHeader>
         <CardContent>
-          {customer.loanHistoryDetails &&
-          customer.loanHistoryDetails.length > 0 ? (
+          {customer.customerLoanHistory &&
+          customer.customerLoanHistory.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -367,7 +418,7 @@ export default function Page() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {customer.loanHistoryDetails.map((loan, index) => (
+                {customer.customerLoanHistory.map((loan, index) => (
                   <TableRow key={index}>
                     <TableCell>
                       {new Intl.NumberFormat("en-PH", {
@@ -381,7 +432,7 @@ export default function Page() {
                     </TableCell>
                     <TableCell>{loan.approvedBy}</TableCell>
                     <TableCell>
-                      {new Date(loan.approvedDateTime).toLocaleString()}
+                      {new Date(loan.approvedAt).toLocaleString()}
                     </TableCell>
                   </TableRow>
                 ))}
