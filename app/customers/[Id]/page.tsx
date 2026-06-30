@@ -10,8 +10,54 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+
+interface EmailDetail {
+  email: string;
+}
+
+interface PhoneDetail {
+  phoneNumber: string;
+  type: string;
+}
+
+interface KycDetail {
+  country: number;
+  zipCode: string;
+  addressLine: string;
+  documentType: string;
+  documentImagePath: string;
+  submittedBy: string;
+  submittedAt: Date;
+  reviewedBy: string;
+  reviewedAt: Date;
+}
+
+interface StatusHistoryDetail {
+  beforeStatus: number;
+  afterStatus: string;
+  createdBy: string;
+  createdDateTime: Date;
+}
+
+interface LoanHistoryDetail {
+  loanAmount: number;
+  status: string;
+  dueDate: string;
+  createdBy: string;
+  createdDateTime: Date;
+  approvedBy: string;
+  approvedDateTime: Date;
+}
 
 interface CustomerProfile {
   Id: number;
@@ -24,6 +70,11 @@ interface CustomerProfile {
   status: string | number;
   createdBy: string;
   createdDateTime: string;
+  emailDetails: EmailDetail[];
+  phoneDetails: PhoneDetail[];
+  kycDetails: KycDetail[];
+  statusHistoryDetails: StatusHistoryDetail[];
+  loanHistoryDetails: LoanHistoryDetail[];
 }
 
 export default function Page() {
@@ -172,6 +223,173 @@ export default function Page() {
               </Field>
             </div>
           </FieldGroup>
+        </CardContent>
+      </Card>
+
+      {/* Contact Details */}
+      <Card className="w-full max-w-3xl">
+        <CardHeader>
+          <CardTitle>Contact Details</CardTitle>
+          <CardDescription>
+            Customer&apos;s contact information.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {customer.emailDetails?.length > 0 ||
+          customer.phoneDetails?.length > 0 ? (
+            <FieldGroup>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel>Email Address</FieldLabel>
+                  <Input
+                    disabled
+                    value={customer.emailDetails?.[0]?.email ?? "N/A"}
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel>Phone Number</FieldLabel>
+                  <Input
+                    disabled
+                    value={
+                      customer.phoneDetails?.[0]
+                        ? `${customer.phoneDetails[0].phoneNumber} (${customer.phoneDetails[0].type})`
+                        : "N/A"
+                    }
+                  />
+                </Field>
+              </div>
+            </FieldGroup>
+          ) : (
+            <p className="text-gray-500">No contact details found.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* KYC Information */}
+      <Card className="w-full max-w-3xl">
+        <CardHeader>
+          <CardTitle>KYC Information</CardTitle>
+          <CardDescription>
+            Know Your Customer verification details.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {customer.kycDetails && customer.kycDetails.length > 0 ? (
+            <FieldGroup>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel>Address</FieldLabel>
+                  <Input
+                    disabled
+                    value={customer.kycDetails[0].addressLine}
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel>Zip Code</FieldLabel>
+                  <Input disabled value={customer.kycDetails[0].zipCode} />
+                </Field>
+                <Field>
+                  <FieldLabel>Country</FieldLabel>
+                  <Input
+                    disabled
+                    value={customer.kycDetails[0].country.toString()}
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel>Document Type</FieldLabel>
+                  <Input
+                    disabled
+                    value={customer.kycDetails[0].documentType}
+                  />
+                </Field>
+              </div>
+            </FieldGroup>
+          ) : (
+            <p className="text-gray-500">No KYC details found.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Status History */}
+      <Card className="w-full max-w-3xl">
+        <CardHeader>
+          <CardTitle>Status History</CardTitle>
+          <CardDescription>Record of account status changes.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {customer.statusHistoryDetails &&
+          customer.statusHistoryDetails.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>From Status</TableHead>
+                  <TableHead>To Status</TableHead>
+                  <TableHead>Changed By</TableHead>
+                  <TableHead>Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {customer.statusHistoryDetails.map((history, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{history.beforeStatus}</TableCell>
+                    <TableCell>{history.afterStatus}</TableCell>
+                    <TableCell>{history.createdBy}</TableCell>
+                    <TableCell>
+                      {new Date(history.createdDateTime).toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-gray-500">No status history found.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Loan History */}
+      <Card className="w-full max-w-3xl">
+        <CardHeader>
+          <CardTitle>Loan History</CardTitle>
+          <CardDescription>Record of past loans.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {customer.loanHistoryDetails &&
+          customer.loanHistoryDetails.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Due Date</TableHead>
+                  <TableHead>Approved By</TableHead>
+                  <TableHead>Approval Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {customer.loanHistoryDetails.map((loan, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      {new Intl.NumberFormat("en-PH", {
+                        style: "currency",
+                        currency: "PHP",
+                      }).format(loan.loanAmount)}
+                    </TableCell>
+                    <TableCell>{loan.status}</TableCell>
+                    <TableCell>
+                      {new Date(loan.dueDate).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>{loan.approvedBy}</TableCell>
+                    <TableCell>
+                      {new Date(loan.approvedDateTime).toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <p className="text-gray-500">No loan history found.</p>
+          )}
         </CardContent>
       </Card>
     </div>

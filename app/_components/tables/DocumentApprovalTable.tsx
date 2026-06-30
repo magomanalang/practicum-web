@@ -82,6 +82,43 @@ export function DocumentApprovalTable() {
     [session?.user.email],
   );
 
+  const handleRejection = React.useCallback(
+    async (document: TableRow) => {
+      try {
+        const payload = {
+          Id: document.id,
+          CustomerId: document.customerId,
+          FullName: document.fullName,
+          Country: document.country,
+          ZipCode: document.zipCode,
+          AddressLine: document.addressLine,
+          DocumentType: document.documentType,
+          DocumentImagePath: document.documentImagePath,
+          SubmittedBy: document.submittedBy,
+          SubmittedAt: document.submittedAt,
+          ReviewedBy: session?.user.email || "Admin",
+          ReviewedAt: toFormattedPhDateTime(),
+        };
+
+        const res = await fetch("/api/auth/reject-document", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          setDocuments((prevDocs) =>
+            prevDocs.filter((doc) => doc.id !== document.id),
+          );
+        }
+      } catch (error) {
+        console.error("Failed to approve document:", error);
+      }
+    },
+    [session?.user.email],
+  );
+
   React.useEffect(() => {
     async function fetchDocuments() {
       setLoading(true);
@@ -146,7 +183,11 @@ export function DocumentApprovalTable() {
             >
               Approve
             </Button>
-            <Button variant="destructive" size="sm">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => handleRejection(row.original)}
+            >
               Reject
             </Button>
           </div>

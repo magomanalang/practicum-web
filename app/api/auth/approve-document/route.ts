@@ -16,19 +16,19 @@ export async function PATCH(request: Request) {
     });
 
     if (!res.ok) {
-      const errorText = await res.text();
-      return NextResponse.json(
-        { message: errorText || "Error processing modification on backend" },
-        { status: res.status },
-      );
+      const errorBody = await res.text();
+      let errorJson;
+      try {
+        errorJson = JSON.parse(errorBody);
+      } catch {
+        errorJson = {
+          message: errorBody || "Error processing modification on backend",
+        };
+      }
+      return NextResponse.json(errorJson, { status: res.status });
     }
 
-    if (res.status === 204) {
-      return new NextResponse(null, { status: 204 });
-    }
-
-    const data = await res.json();
-    return NextResponse.json(data, { status: res.status });
+    return new NextResponse(null, { status: 204 });
   } catch (e) {
     console.error("Proxy PATCH error:", e);
     return NextResponse.json(
