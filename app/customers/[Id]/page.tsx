@@ -26,6 +26,8 @@ import {
   flexRender,
   useReactTable,
 } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { AddPhoneNumberDialog } from "@/app/_components/dialogs/AddPhoneNumberDialog";
 
 interface EmailDetail {
   customerId: number;
@@ -118,7 +120,8 @@ export default function Page() {
   const [customer, setCustomer] = useState<CustomerProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
+const [isPhoneDialogOpen, setIsPhoneDialogOpen] = React.useState(false);
+  const [isPhoneDialogOpen, setIsPhoneDialogOpen] = React.useState(false);
   const table = useReactTable({
     data: customer?.customerStatusHistories ?? [],
     columns,
@@ -203,7 +206,31 @@ export default function Page() {
     currency: "PHP",
   }).format(customer.balance);
 
+const handleAddPhoneNumber = useCallback((customer: CustomerProfile))=>{
+    setCustomer(customer);
+    setIsPhoneDialogOpen(true);
+}, []);
+  const handleSuccess = () => {
+  const handleAddPhoneSuccess = () => {
+    setIsPhoneDialogOpen(false);
+    if (Id) {
+      fetchCustomer(Id);
+    }
+  };
   return (
+    <>      <AddPhoneNumberDialog
+            id={customer.Id}
+            open={isPhoneDialogOpen}
+            onOpenChange={setIsPhoneDialogOpen}
+            onSuccess={handleSuccess}
+          />
+    <>
+      <AddPhoneNumberDialog
+        customer={customer}
+        open={isPhoneDialogOpen}
+        onOpenChange={setIsPhoneDialogOpen}
+        onSuccess={handleAddPhoneSuccess}
+      />
     <div className="w-full min-h-screen px-4 py-8 flex flex-col items-center gap-6">
       <h1 className="text-3xl font-bold tracking-tight">Customer Profile</h1>
 
@@ -270,6 +297,12 @@ export default function Page() {
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Contact Details</CardTitle>
+          <Button>Add Email</Button>{" "}
+          <Button onClick={() => handleAddPhoneNumber(Id)}>
+          <Button>Add Email</Button>
+          <Button onClick={() => setIsPhoneDialogOpen(true)}>
+            Add Phone Number
+          </Button>
           <CardDescription>
             Customer&apos;s contact information.
           </CardDescription>
@@ -394,7 +427,7 @@ export default function Page() {
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Loan History</CardTitle>
-          <CardDescription>Record of past loans.</CardDescription>
+          <CardDescription>Record of Active or Inactive loans.</CardDescription>
         </CardHeader>
         <CardContent>
           {customer.customerLoanHistories &&
@@ -436,5 +469,6 @@ export default function Page() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }
