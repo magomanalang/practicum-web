@@ -11,20 +11,7 @@ export async function POST(request: Request) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        FirstName: body.FirstName,
-        MiddleName: body.MiddleName,
-        LastName: body.LastName,
-        Suffix: body.Suffix,
-        Email: body.Email,
-        Password: body.Password,
-        EmployeeId: body.EmployeeId,
-        EmployeeRoles: body.EmployeeRoles,
-        CreatedBy: body.CreatedBy,
-        CreatedDateTime: body.CreatedDateTime,
-        ApprovedBy: body.ApprovedBy,
-        ApprovedDateTime: body.ApprovedDateTime,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!dotNetResponse.ok) {

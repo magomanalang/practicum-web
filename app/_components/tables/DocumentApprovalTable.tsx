@@ -1,5 +1,6 @@
 "use client";
 
+import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,12 +23,14 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useSession } from "next-auth/react";
 import React from "react";
 import { useMemo } from "react";
 
 export function DocumentApprovalTable() {
   type TableRow = {
-    customer_id: string;
+    id: string;
+    customerId: string;
     fullName: string;
     country: string;
     zipCode: string;
@@ -40,6 +43,44 @@ export function DocumentApprovalTable() {
 
   const [documents, setDocuments] = React.useState<TableRow[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const { data: session } = useSession();
+
+  const handleApproval = React.useCallback(
+    async (document: TableRow) => {
+      try {
+        const payload = {
+          Id: document.id,
+          CustomerId: document.customerId,
+          FullName: document.fullName,
+          Country: document.country,
+          ZipCode: document.zipCode,
+          AddressLine: document.addressLine,
+          DocumentType: document.documentType,
+          DocumentImagePath: document.documentImagePath,
+          SubmittedBy: document.submittedBy,
+          SubmittedAt: document.submittedAt,
+          ReviewedBy: session?.user.email || "Admin",
+          ReviewedAt: toFormattedPhDateTime(),
+        };
+
+        const res = await fetch("/api/auth/approve-document", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          setDocuments((prevDocs) =>
+            prevDocs.filter((doc) => doc.id !== document.id),
+          );
+        }
+      } catch (error) {
+        console.error("Failed to approve document:", error);
+      }
+    },
+    [session?.user.email],
+  );
 
   React.useEffect(() => {
     async function fetchDocuments() {
@@ -98,7 +139,11 @@ export function DocumentApprovalTable() {
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleApproval(row.original)}
+            >
               Approve
             </Button>
             <Button variant="destructive" size="sm">
@@ -108,7 +153,7 @@ export function DocumentApprovalTable() {
         ),
       },
     ],
-    [],
+    [handleApproval],
   );
 
   const data = useMemo(() => documents, [documents]);
