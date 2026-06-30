@@ -120,7 +120,6 @@ export default function Page() {
   const [customer, setCustomer] = useState<CustomerProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-const [isPhoneDialogOpen, setIsPhoneDialogOpen] = React.useState(false);
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = React.useState(false);
   const table = useReactTable({
     data: customer?.customerStatusHistories ?? [],
@@ -206,24 +205,14 @@ const [isPhoneDialogOpen, setIsPhoneDialogOpen] = React.useState(false);
     currency: "PHP",
   }).format(customer.balance);
 
-const handleAddPhoneNumber = useCallback((customer: CustomerProfile))=>{
-    setCustomer(customer);
-    setIsPhoneDialogOpen(true);
-}, []);
-  const handleSuccess = () => {
   const handleAddPhoneSuccess = () => {
     setIsPhoneDialogOpen(false);
     if (Id) {
       fetchCustomer(Id);
     }
   };
+
   return (
-    <>      <AddPhoneNumberDialog
-            id={customer.Id}
-            open={isPhoneDialogOpen}
-            onOpenChange={setIsPhoneDialogOpen}
-            onSuccess={handleSuccess}
-          />
     <>
       <AddPhoneNumberDialog
         customer={customer}
@@ -297,12 +286,12 @@ const handleAddPhoneNumber = useCallback((customer: CustomerProfile))=>{
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle>Contact Details</CardTitle>
-          <Button>Add Email</Button>{" "}
-          <Button onClick={() => handleAddPhoneNumber(Id)}>
-          <Button>Add Email</Button>
-          <Button onClick={() => setIsPhoneDialogOpen(true)}>
-            Add Phone Number
-          </Button>
+          <div className="flex gap-2">
+            <Button>Add Email</Button>
+            <Button onClick={() => setIsPhoneDialogOpen(true)}>
+              Add Phone Number
+            </Button>
+          </div>
           <CardDescription>
             Customer&apos;s contact information.
           </CardDescription>

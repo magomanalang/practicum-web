@@ -3,7 +3,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -91,11 +90,7 @@ export function AddPhoneNumberDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-8.5">
         <DialogHeader>
-          <DialogTitle>Create Loan Product for Approval</DialogTitle>
-          <DialogDescription>
-            Fill in the details for the new loan product. Click submit to send
-            for approval.
-          </DialogDescription>
+          <DialogTitle>Add Phone Number</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
@@ -106,10 +101,10 @@ export function AddPhoneNumberDialog({
             )}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="description" className="text-right">
-                Description
+                Phone Number
               </Label>
               <Input
-                id="description"
+                id="phoneNumber"
                 value={form.phoneNumber}
                 onChange={handleChange}
                 className="col-span-3"
