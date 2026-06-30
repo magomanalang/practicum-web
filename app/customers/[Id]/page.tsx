@@ -89,20 +89,12 @@ interface CustomerProfile {
   emailDetails: EmailDetail[];
   phoneDetails: PhoneDetail[];
   kycDetails: KycDetail[];
-  customerLoanHistory: LoanHistoryDetail[];
-  customerStatusHistory: StatusHistoryDetail[];
+  customerLoanHistories: LoanHistoryDetail[];
+  customerStatusHistories: StatusHistoryDetail[];
 }
 const columnHelper = createColumnHelper<StatusHistoryDetail>();
 
 const columns = [
-  columnHelper.accessor("customerId", {
-    header: "Customer Id",
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor("customerName", {
-    header: "Customer Name",
-    cell: (info) => info.getValue(),
-  }),
   columnHelper.accessor("beforeStatus", {
     header: "From Status",
     cell: (info) => info.getValue(),
@@ -128,7 +120,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
 
   const table = useReactTable({
-    data: customer?.customerStatusHistory ?? [],
+    data: customer?.customerStatusHistories ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -405,8 +397,8 @@ export default function Page() {
           <CardDescription>Record of past loans.</CardDescription>
         </CardHeader>
         <CardContent>
-          {customer.customerLoanHistory &&
-          customer.customerLoanHistory.length > 0 ? (
+          {customer.customerLoanHistories &&
+          customer.customerLoanHistories.length > 0 ? (
             <Table>
               <TableHeader>
                 <TableRow>
@@ -418,7 +410,7 @@ export default function Page() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {customer.customerLoanHistory.map((loan, index) => (
+                {customer.customerLoanHistories.map((loan, index) => (
                   <TableRow key={index}>
                     <TableCell>
                       {new Intl.NumberFormat("en-PH", {
