@@ -303,7 +303,7 @@ export default function Page() {
 
       <Card className="w-full max-w-3xl">
         <CardHeader>
-          <CardTitle>KYC Information</CardTitle>
+          <CardTitle>Document Information</CardTitle>
           <CardDescription>
             Know Your Customer verification details.
           </CardDescription>
