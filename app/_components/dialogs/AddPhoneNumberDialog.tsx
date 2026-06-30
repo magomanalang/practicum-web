@@ -32,7 +32,7 @@ export function AddPhoneNumberDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
-  customer: { Id: number } | null;
+  customer: { id: number } | null;
 }) {
   const { data: session } = useSession();
   const [form, setForm] = useState<FormState>(INITIAL_STATE);
@@ -57,7 +57,7 @@ export function AddPhoneNumberDialog({
         throw new Error("Customer is not available.");
       }
       const payload = {
-        CustomerId: customer.Id,
+        CustomerId: customer.id,
         PhoneNumber: form.phoneNumber,
         CreatedBy: session?.user?.email || "Admin",
         CreatedDateTime: toFormattedPhDateTime(),

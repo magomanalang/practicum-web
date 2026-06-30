@@ -28,6 +28,7 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { AddPhoneNumberDialog } from "@/app/_components/dialogs/AddPhoneNumberDialog";
+import { AddEmailDialog } from "@/app/_components/dialogs/AddEmailDialog";
 
 interface EmailDetail {
   customerId: number;
@@ -121,6 +122,7 @@ export default function Page() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = React.useState(false);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = React.useState(false);
   const table = useReactTable({
     data: customer?.customerStatusHistories ?? [],
     columns,
@@ -211,7 +213,12 @@ export default function Page() {
       fetchCustomer(Id);
     }
   };
-
+  const handleAddEmailSuccess = () => {
+    setIsEmailDialogOpen(false);
+    if (Id) {
+      fetchCustomer(Id);
+    }
+  };
   return (
     <>
       <AddPhoneNumberDialog
@@ -220,244 +227,266 @@ export default function Page() {
         onOpenChange={setIsPhoneDialogOpen}
         onSuccess={handleAddPhoneSuccess}
       />
-    <div className="w-full min-h-screen px-4 py-8 flex flex-col items-center gap-6">
-      <h1 className="text-3xl font-bold tracking-tight">Customer Profile</h1>
+      <AddEmailDialog
+        customer={customer}
+        open={isEmailDialogOpen}
+        onOpenChange={setIsEmailDialogOpen}
+        onSuccess={handleAddEmailSuccess}
+      />
+      <div className="w-full min-h-screen px-4 py-8 flex flex-col items-center gap-6">
+        <h1 className="text-3xl font-bold tracking-tight">Customer Profile</h1>
 
-      <Card className="w-full max-w-3xl">
-        <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
-          <CardDescription>Basic information for {fullName}.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field>
-                <FieldLabel>Full Name</FieldLabel>
-                <Input disabled value={fullName} />
-              </Field>
-              <Field>
-                <FieldLabel>Date of Birth</FieldLabel>
-                <Input
-                  disabled
-                  value={new Date(customer.dateOfBirth).toLocaleDateString()}
-                />
-              </Field>
-            </div>
-          </FieldGroup>
-        </CardContent>
-      </Card>
-
-      <Card className="w-full max-w-3xl">
-        <CardHeader>
-          <CardTitle>Account Details</CardTitle>
-          <CardDescription>
-            Customer account status and history.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Field>
-                <FieldLabel>Balance</FieldLabel>
-                <Input disabled value={formattedBalance} />
-              </Field>
-              <Field>
-                <FieldLabel>Status</FieldLabel>
-                <Input disabled value={customer.status.toString()} />
-              </Field>
-              <Field>
-                <FieldLabel>Member Since</FieldLabel>
-                <Input
-                  disabled
-                  value={new Date(
-                    customer.createdDateTime,
-                  ).toLocaleDateString()}
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Record Created By</FieldLabel>
-                <Input disabled value={customer.createdBy} />
-              </Field>
-            </div>
-          </FieldGroup>
-        </CardContent>
-      </Card>
-
-      <Card className="w-full max-w-3xl">
-        <CardHeader>
-          <CardTitle>Contact Details</CardTitle>
-          <div className="flex gap-2">
-            <Button>Add Email</Button>
-            <Button onClick={() => setIsPhoneDialogOpen(true)}>
-              Add Phone Number
-            </Button>
-          </div>
-          <CardDescription>
-            Customer&apos;s contact information.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {customer.emailDetails?.length > 0 ||
-          customer.phoneDetails?.length > 0 ? (
+        <Card className="w-full max-w-3xl">
+          <CardHeader>
+            <CardTitle>Profile Information</CardTitle>
+            <CardDescription>Basic information for {fullName}.</CardDescription>
+          </CardHeader>
+          <CardContent>
             <FieldGroup>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>Email Address</FieldLabel>
-                  <Input
-                    disabled
-                    value={customer.emailDetails?.[0]?.email ?? "N/A"}
-                  />
+                  <FieldLabel>Full Name</FieldLabel>
+                  <Input disabled value={fullName} />
                 </Field>
                 <Field>
-                  <FieldLabel>Phone Number</FieldLabel>
+                  <FieldLabel>Date of Birth</FieldLabel>
                   <Input
                     disabled
-                    value={customer.phoneDetails?.[0]?.phoneNumber ?? "N/A"}
+                    value={new Date(customer.dateOfBirth).toLocaleDateString()}
                   />
                 </Field>
               </div>
             </FieldGroup>
-          ) : (
-            <p className="text-gray-500">No contact details found.</p>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card className="w-full max-w-3xl">
-        <CardHeader>
-          <CardTitle>Document Information</CardTitle>
-          <CardDescription>
-            Know Your Customer verification details.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {customer.kycDetails && customer.kycDetails.length > 0 ? (
+        <Card className="w-full max-w-3xl">
+          <CardHeader>
+            <CardTitle>Account Details</CardTitle>
+            <CardDescription>
+              Customer account status and history.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
             <FieldGroup>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Field>
-                  <FieldLabel>Address</FieldLabel>
-                  <Input disabled value={customer.kycDetails[0].addressLine} />
+                  <FieldLabel>Balance</FieldLabel>
+                  <Input disabled value={formattedBalance} />
                 </Field>
                 <Field>
-                  <FieldLabel>Zip Code</FieldLabel>
-                  <Input disabled value={customer.kycDetails[0].zipCode} />
+                  <FieldLabel>Status</FieldLabel>
+                  <Input disabled value={customer.status.toString()} />
                 </Field>
                 <Field>
-                  <FieldLabel>Country</FieldLabel>
+                  <FieldLabel>Member Since</FieldLabel>
                   <Input
                     disabled
-                    value={customer.kycDetails[0].country.toString()}
+                    value={new Date(
+                      customer.createdDateTime,
+                    ).toLocaleDateString()}
                   />
                 </Field>
                 <Field>
-                  <FieldLabel>Document Type</FieldLabel>
-                  <Input disabled value={customer.kycDetails[0].documentType} />
+                  <FieldLabel>Record Created By</FieldLabel>
+                  <Input disabled value={customer.createdBy} />
                 </Field>
               </div>
             </FieldGroup>
-          ) : (
-            <p className="text-gray-500">No KYC details found.</p>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card className="w-full max-w-3xl">
-        <CardHeader>
-          <CardTitle>Status History</CardTitle>
-          <CardDescription>Record of account status changes.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
+        <Card className="w-full max-w-3xl">
+          <CardHeader>
+            <CardTitle>Contact Details</CardTitle>
+            <div className="flex gap-2">
+              <Button onClick={() => setIsEmailDialogOpen(true)}>
+                Add Email
+              </Button>
+              <Button onClick={() => setIsPhoneDialogOpen(true)}>
+                Add Phone Number
+              </Button>
+            </div>
+            <CardDescription>
+              Customer&apos;s contact information.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {customer.emailDetails.length > 0 ||
+            customer.phoneDetails.length > 0 ? (
+              <FieldGroup>
+                {customer.emailDetails.length > 0 && (
+                  <>
+                    <h3 className="font-semibold mb-2">Email Addresses</h3>
+                    {customer.emailDetails.map((email, index) => (
+                      <Field key={`email-${index}`} className="mb-2">
+                        <FieldLabel>Email #{index + 1}</FieldLabel>
+                        <Input disabled value={email.email} />
+                      </Field>
                     ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No status history found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                  </>
+                )}
+                {customer.phoneDetails.length > 0 && (
+                  <>
+                    <h3 className="font-semibold mt-4 mb-2">Phone Numbers</h3>
+                    {customer.phoneDetails.map((phone, index) => (
+                      <Field key={`phone-${index}`} className="mb-2">
+                        <FieldLabel>Phone #{index + 1}</FieldLabel>
+                        <Input disabled value={phone.phoneNumber} />
+                      </Field>
+                    ))}
+                  </>
+                )}
+              </FieldGroup>
+            ) : (
+              <p className="text-gray-500">No contact details found.</p>
+            )}
+          </CardContent>
+        </Card>
 
-      <Card className="w-full max-w-3xl">
-        <CardHeader>
-          <CardTitle>Loan History</CardTitle>
-          <CardDescription>Record of Active or Inactive loans.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {customer.customerLoanHistories &&
-          customer.customerLoanHistories.length > 0 ? (
+        <Card className="w-full max-w-3xl">
+          <CardHeader>
+            <CardTitle>Document Information</CardTitle>
+            <CardDescription>
+              Know Your Customer verification details.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {customer.kycDetails && customer.kycDetails.length > 0 ? (
+              <FieldGroup>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel>Address</FieldLabel>
+                    <Input
+                      disabled
+                      value={customer.kycDetails[0].addressLine}
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Zip Code</FieldLabel>
+                    <Input disabled value={customer.kycDetails[0].zipCode} />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Country</FieldLabel>
+                    <Input
+                      disabled
+                      value={customer.kycDetails[0].country.toString()}
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Document Type</FieldLabel>
+                    <Input
+                      disabled
+                      value={customer.kycDetails[0].documentType}
+                    />
+                  </Field>
+                </div>
+              </FieldGroup>
+            ) : (
+              <p className="text-gray-500">No KYC details found.</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="w-full max-w-3xl">
+          <CardHeader>
+            <CardTitle>Status History</CardTitle>
+            <CardDescription>Record of account status changes.</CardDescription>
+          </CardHeader>
+          <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead>Approved By</TableHead>
-                  <TableHead>Approval Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {customer.customerLoanHistories.map((loan, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      {new Intl.NumberFormat("en-PH", {
-                        style: "currency",
-                        currency: "PHP",
-                      }).format(loan.loanAmount)}
-                    </TableCell>
-                    <TableCell>{loan.status}</TableCell>
-                    <TableCell>
-                      {new Date(loan.dueDate).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>{loan.approvedBy}</TableCell>
-                    <TableCell>
-                      {new Date(loan.approvedAt).toLocaleString()}
-                    </TableCell>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    ))}
                   </TableRow>
                 ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No status history found.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
-          ) : (
-            <p className="text-gray-500">No loan history found.</p>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+          </CardContent>
+        </Card>
+
+        <Card className="w-full max-w-3xl">
+          <CardHeader>
+            <CardTitle>Loan History</CardTitle>
+            <CardDescription>
+              Record of Active or Inactive loans.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {customer.customerLoanHistories &&
+            customer.customerLoanHistories.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Due Date</TableHead>
+                    <TableHead>Approved By</TableHead>
+                    <TableHead>Approval Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {customer.customerLoanHistories.map((loan, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        {new Intl.NumberFormat("en-PH", {
+                          style: "currency",
+                          currency: "PHP",
+                        }).format(loan.loanAmount)}
+                      </TableCell>
+                      <TableCell>{loan.status}</TableCell>
+                      <TableCell>
+                        {new Date(loan.dueDate).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>{loan.approvedBy}</TableCell>
+                      <TableCell>
+                        {new Date(loan.approvedAt).toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <p className="text-gray-500">No loan history found.</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </>
   );
 }
