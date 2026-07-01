@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoanProductDropDown from "../dropdowns/LoanProductDropDown";
 import CustomerListDropDown from "../dropdowns/CustomerListDropDown";
 import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
@@ -29,6 +29,33 @@ export function LoanApplicationForm({
 
   const dateToday = toFormattedPhDateTime();
 
+  useEffect(() => {
+    if (!form.loanProduct) {
+      return;
+    }
+
+    const fetchLoanProductDetails = async () => {
+      try {
+        const res = await fetch(
+          `/api/auth/get-loan-product?id=${encodeURIComponent(form.loanProduct)}`,
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data.interestRate !== "undefined") {
+            setForm((prev) => ({
+              ...prev,
+              interestRate: data.interestRate.toString(),
+            }));
+          }
+        } else {
+          console.error("Failed to fetch loan product details");
+        }
+      } catch (error) {
+        console.error("Error fetching loan product details:", error);
+      }
+    };
+    fetchLoanProductDetails();
+  }, [form.loanProduct]);
   function handleSubmit(e: React.FormEvent): void {
     e.preventDefault();
   }
@@ -65,7 +92,11 @@ export function LoanApplicationForm({
               <LoanProductDropDown
                 value={form.loanProduct}
                 onChange={(val) =>
-                  setForm((prev) => ({ ...prev, loanProduct: val }))
+                  setForm((prev) => ({
+                    ...prev,
+                    loanProduct: val,
+                    interestRate: "",
+                  }))
                 }
               />
               <Input
