@@ -1,5 +1,6 @@
 "use client";
 
+import { CommonStatus } from "@/app/_constants/commonStatus";
 import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,13 +31,15 @@ import { useMemo } from "react";
 export function LoanRequestsTable() {
   type TableRow = {
     id: string;
+    customerId: string;
+    loanProductId: string;
     name: string;
     loanName: string;
     amount: number;
     interestRate: number;
     finalAmount: number;
     status: string;
-    endDate: number;
+    months: number;
     createdBy: string;
     createdDateTime: Date;
   };
@@ -50,49 +53,26 @@ export function LoanRequestsTable() {
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
 
-  const handleDeleteLoanRequest = useCallback(
-    async (loanRequests: TableRow) => {
-      setSuccess(null);
-      setError(null);
-      setLoading(true);
-      try {
-        const dateTimeNow = toFormattedPhDateTime();
-
-        const res = await fetch("/api/auth/delete-loan-request", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            Name: loanRequests.name,
-            LoanName: loanRequests.loanName,
-            Amount: loanRequests.amount,
-            InterestRate: loanRequests.interestRate,
-            FinalAmount: loanRequests.finalAmount,
-            Status: loanRequests.status,
-            StartDate: dateTimeNow,
-            EndDate: loanRequests.endDate,
-            CreatedBy: loanRequests.createdBy,
-            CreatedDateTime: loanRequests.createdDateTime,
-            ApprovedBy: session?.user?.email || "Admin",
-            ApprovedDateTime: dateTimeNow,
-          }),
-        });
-
-        if (!res.ok) {
-          const data = await res.json();
-          setError(data.message ?? "Something went wrong.");
-        } else {
-          setSuccess(
-            "Employee delete request submitted successfully for approval!",
-          );
-        }
-      } catch {
-        setError("Could not reach the server. Please try again.");
-      } finally {
-        setLoading(false);
+  const handleDeleteLoanRequest = useCallback(async (id: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/auth/delete-loan-request?id=${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setLoanRequests((prevLoanProductRequests) =>
+          prevLoanProductRequests.filter(
+            (loanProductRequests) => loanProductRequests.id !== id,
+          ),
+        );
       }
-    },
-    [session?.user?.email],
-  );
+    } catch (error) {
+      console.error("Failed to reject loan product request:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const handleApproveLoanRequest = useCallback(
     async (loanRequests: TableRow) => {
       setSuccess(null);
@@ -100,19 +80,23 @@ export function LoanRequestsTable() {
       setLoading(true);
       try {
         const dateTimeNow = toFormattedPhDateTime();
+        const endDate = new Date(loanRequests.createdDateTime);
+        endDate.setMonth(endDate.getMonth() + loanRequests.months);
 
         const res = await fetch("/api/auth/add-loan", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            CustomerId: loanRequests.id,
+            LoanProductId: loanRequests.loanProductId,
             Name: loanRequests.name,
             LoanName: loanRequests.loanName,
             Amount: loanRequests.amount,
             InterestRate: loanRequests.interestRate,
             FinalAmount: loanRequests.finalAmount,
-            Status: loanRequests.status,
+            Status: CommonStatus.Approved,
             StartDate: dateTimeNow,
-            EndDate: loanRequests.endDate,
+            EndDate: endDate,
             CreatedBy: loanRequests.createdBy,
             CreatedDateTime: loanRequests.createdDateTime,
             ApprovedBy: session?.user?.email || "Admin",
@@ -177,7 +161,7 @@ export function LoanRequestsTable() {
         header: "Final Amount",
       },
       {
-        accessorKey: "endDate",
+        accessorKey: "months",
         header: "Proposed Months To Finish",
       },
       {
@@ -187,14 +171,6 @@ export function LoanRequestsTable() {
       {
         accessorKey: "createdDateTime",
         header: "Created Date Time",
-      },
-      {
-        accessorKey: "approvedBy",
-        header: "Approved By",
-      },
-      {
-        accessorKey: "approvedDateTime",
-        header: "Approved Date Time",
       },
       {
         id: "actions",
@@ -211,7 +187,7 @@ export function LoanRequestsTable() {
             <Button
               variant="link"
               size="sm"
-              onClick={() => handleDeleteLoanRequest(row.original)}
+              onClick={() => handleDeleteLoanRequest(row.original.id)}
             >
               Reject
             </Button>

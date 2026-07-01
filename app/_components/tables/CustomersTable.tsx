@@ -92,15 +92,6 @@ export function CustomersTable() {
         header: "Status",
       },
       {
-        id: "view",
-        header: "View",
-        cell: ({ row }) => (
-          <Button variant="link" size="sm">
-            View Full Profile
-          </Button>
-        ),
-      },
-      {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (

@@ -1,6 +1,5 @@
 "use client";
 
-import { LoanCategoriesToValueMap } from "@/app/_constants/loanCategories";
 import {
   RequestTypeReadable,
   RequestTypes,
