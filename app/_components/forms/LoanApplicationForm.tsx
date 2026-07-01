@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import LoanProductDropDown from "../dropdowns/LoanProductDropDown";
 import CustomerListDropDown from "../dropdowns/CustomerListDropDown";
+import { toFormattedPhDateTime } from "@/app/_helpers/FormattedDateTime";
 
 export function LoanApplicationForm({
   ...props
@@ -25,6 +26,8 @@ export function LoanApplicationForm({
     startDate: "",
     endDate: "",
   });
+
+  const dateToday = toFormattedPhDateTime();
 
   function handleSubmit(e: React.FormEvent): void {
     e.preventDefault();
@@ -76,18 +79,15 @@ export function LoanApplicationForm({
                 onChange={handleChange}
                 id="interestRate"
                 placeholder="Interest Rate"
+                disabled
               />
-              <Input
-                value={form.startDate}
-                onChange={handleChange}
-                id="startDate"
-                placeholder="Start Date"
-              />
+
               <Input
                 value={form.endDate}
                 onChange={handleChange}
                 id="endDate"
-                placeholder="End Date"
+                min={dateToday}
+                placeholder="Months"
               />
               <Button>Submit Loan for Approval</Button>
             </FieldGroup>
