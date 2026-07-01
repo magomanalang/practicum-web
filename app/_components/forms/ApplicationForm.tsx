@@ -122,16 +122,19 @@ export function ApplicationForm({
                 </div>
               )}
 
-              <CustomerListDropDown
-                value={form.customerId}
-                onChange={(selectedId, selectedFullName) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    customerId: selectedId,
-                    fullName: selectedFullName,
-                  }))
-                }
-              />
+              <Field>
+                <FieldLabel>Customer</FieldLabel>
+                <CustomerListDropDown
+                  value={form.customerId}
+                  onChange={(selectedId, selectedFullName) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      customerId: selectedId,
+                      fullName: selectedFullName,
+                    }))
+                  }
+                />
+              </Field>
 
               <Field>
                 <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
