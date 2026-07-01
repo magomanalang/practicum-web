@@ -27,10 +27,12 @@ interface LoanProduct {
 interface LoanDropDownProps {
   value: string;
   onChange: (value: string) => void;
+  className?: string;
 }
 export default function LoanProductDropDown({
   value,
   onChange,
+  className,
 }: LoanDropDownProps) {
   const [open, setOpen] = React.useState(false);
   const [products, setProducts] = React.useState<LoanProduct[]>([]);
@@ -60,7 +62,10 @@ export default function LoanProductDropDown({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn(
+            "w-full justify-between text-left font-normal",
+            className,
+          )}
           disabled={loading}
         >
           {loading ? (

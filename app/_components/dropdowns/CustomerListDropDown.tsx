@@ -28,10 +28,12 @@ interface Customers {
 interface CustomerDropDownProps {
   value: string;
   onChange: (id: string, fullName: string) => void;
+  className?: string;
 }
 export default function CustomerListDropDown({
   value,
   onChange,
+  className,
 }: CustomerDropDownProps) {
   const [open, setOpen] = React.useState(false);
   const [customers, setCustomers] = React.useState<Customers[]>([]);
@@ -65,7 +67,10 @@ export default function CustomerListDropDown({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn(
+            "w-full justify-between text-left font-normal",
+            className,
+          )}
           disabled={loading}
         >
           {loading ? (
