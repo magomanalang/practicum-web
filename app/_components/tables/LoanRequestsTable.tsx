@@ -87,7 +87,7 @@ export function LoanRequestsTable() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            CustomerId: loanRequests.id,
+            CustomerId: loanRequests.customerId,
             LoanProductId: loanRequests.loanProductId,
             Name: loanRequests.name,
             LoanName: loanRequests.loanName,
@@ -108,6 +108,8 @@ export function LoanRequestsTable() {
           const data = await res.json();
           setError(data.message ?? "Something went wrong.");
         } else {
+          await handleDeleteLoanRequest(String(loanRequests.id));
+
           setSuccess(
             "Employee delete request submitted successfully for approval!",
           );
@@ -118,7 +120,7 @@ export function LoanRequestsTable() {
         setLoading(false);
       }
     },
-    [session?.user?.email],
+    [session?.user?.email, handleDeleteLoanRequest],
   );
   React.useEffect(() => {
     async function fetchLoanRequests() {

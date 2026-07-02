@@ -29,6 +29,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { AddPhoneNumberDialog } from "@/app/_components/dialogs/AddPhoneNumberDialog";
 import { AddEmailDialog } from "@/app/_components/dialogs/AddEmailDialog";
+import { ReduceBalanceDialog } from "@/app/_components/dialogs/ReduceBalanceDialog";
+import { LoanCard } from "@/app/_components/LoanCard";
 
 interface EmailDetail {
   customerId: number;
@@ -95,6 +97,24 @@ interface CustomerProfile {
   customerLoanHistories: LoanHistoryDetail[];
   customerStatusHistories: StatusHistoryDetail[];
 }
+
+interface LoanProfile {
+  Id: number;
+  customerId: number;
+  LoanName: string;
+  LoanProductId: number;
+  Amount: number;
+  InterestRate: number;
+  FinalAmount: number;
+  Status: string;
+  StartDate: Date;
+  EndDate: Date;
+  CreatedBy: string;
+  CreatedDateTime: Date;
+  ApprovedBy: string;
+  ApprovedDateTime: Date;
+}
+
 const columnHelper = createColumnHelper<StatusHistoryDetail>();
 
 const columns = [
@@ -119,10 +139,14 @@ const columns = [
 export default function Page() {
   const { Id } = useParams<{ Id: string }>();
   const [customer, setCustomer] = useState<CustomerProfile | null>(null);
+  const [customerLoans, setCustomerLoans] = useState<LoanProfile[]>([]);
+  const [loanLoading, setLoanLoading] = useState(true);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = React.useState(false);
   const [isEmailDialogOpen, setIsEmailDialogOpen] = React.useState(false);
+  const [isBalanceDialogOpen, setIsBalanceDialogOpen] = React.useState(false);
+
   const table = useReactTable({
     data: customer?.customerStatusHistories ?? [],
     columns,
@@ -165,6 +189,48 @@ export default function Page() {
       fetchCustomer(Id);
     }
   }, [Id, fetchCustomer]);
+
+  const fetchCustomerLoans = useCallback(async (customerId: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch(
+        `/api/auth/get-customer-loans?id=${encodeURIComponent(customerId)}`,
+      );
+
+      if (!res.ok) {
+        throw new Error(`Failed to load profile (Status: ${res.status})`);
+      }
+
+      const loanData = await res.json();
+
+      console.log("=== API RESPONSE RECEIVED ===");
+      console.log(loanData);
+      console.table(
+        customerLoans.map((loan) => ({
+          Id: loan.Id,
+          LoanName: loan.LoanName,
+        })),
+      );
+      setCustomerLoans(loanData);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error("Failed to fetch customer profile:", err);
+      setError(
+        err.message ||
+          "An unexpected error occurred while loading the profile.",
+      );
+    } finally {
+      setLoanLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Id) {
+      fetchCustomerLoans(Id);
+    }
+  }, [Id, fetchCustomerLoans]);
 
   if (loading) {
     return (
@@ -219,6 +285,21 @@ export default function Page() {
       fetchCustomer(Id);
     }
   };
+  const handleReduceBalanceSuccess = () => {
+    setIsBalanceDialogOpen(false);
+    if (Id) {
+      fetchCustomer(Id);
+    }
+  };
+
+  if (loading || loanLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-50">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <>
       <AddPhoneNumberDialog
@@ -232,6 +313,12 @@ export default function Page() {
         open={isEmailDialogOpen}
         onOpenChange={setIsEmailDialogOpen}
         onSuccess={handleAddEmailSuccess}
+      />
+      <ReduceBalanceDialog
+        customer={customer}
+        open={isBalanceDialogOpen}
+        onOpenChange={setIsBalanceDialogOpen}
+        onSuccess={handleReduceBalanceSuccess}
       />
       <div className="w-full min-h-screen px-4 py-8 flex flex-col items-center gap-6">
         <h1 className="text-3xl font-bold tracking-tight">Customer Profile</h1>
@@ -259,6 +346,26 @@ export default function Page() {
             </FieldGroup>
           </CardContent>
         </Card>
+
+        <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+          {customerLoans.length === 0 ? (
+            <Card>
+              <CardContent className="flex h-32 items-center justify-center">
+                <p className="text-muted-foreground">
+                  This customer has no loans.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            customerLoans.map((loan) => (
+              <LoanCard
+                key={loan.id}
+                loan={loan}
+                onSuccess={() => fetchCustomerLoans(Id)}
+              />
+            ))
+          )}
+        </div>
 
         <Card className="w-full max-w-3xl">
           <CardHeader>

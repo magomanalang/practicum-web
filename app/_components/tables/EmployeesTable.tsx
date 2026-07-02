@@ -176,9 +176,6 @@ export function EmployeesTable() {
         header: "Actions",
         cell: ({ row }) => (
           <>
-            <Button variant="link" size="sm">
-              Add Role
-            </Button>{" "}
             <Button
               variant="link"
               size="sm"

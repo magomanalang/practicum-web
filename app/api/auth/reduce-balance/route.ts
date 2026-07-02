@@ -4,20 +4,25 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const backendUrl = `${process.env.API_URL}/api/Loan/add-loan`;
+    const backendUrl = `${process.env.API_URL}/api/Loan/reduce-balance`;
 
     const dotNetResponse = await fetch(backendUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ body }),
     });
 
     if (!dotNetResponse.ok) {
-      console.error(".NET Backend Error status:", dotNetResponse.status);
+      console.error(".NET Backend Login Error status:", dotNetResponse.status);
+
+      const errorData = await dotNetResponse.json().catch(() => ({}));
       return NextResponse.json(
-        { message: "The backend server rejected the application details." },
+        {
+          message:
+            errorData.message ?? "Invalid credentials or account missing.",
+        },
         { status: dotNetResponse.status },
       );
     }
@@ -26,13 +31,13 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        message: "Data successfully saved!",
+        message: "Authentication Successful",
         data: resultData,
       },
-      { status: 201 },
+      { status: 200 },
     );
   } catch (e) {
-    console.error("Proxy error:", e);
+    console.error("Login Proxy error:", e);
     return NextResponse.json(
       { message: "Backend unreachable" },
       { status: 502 },

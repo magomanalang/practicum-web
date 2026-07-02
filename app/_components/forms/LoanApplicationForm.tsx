@@ -186,7 +186,7 @@ export function LoanApplicationForm({
               </CardHeader>
               <CardContent>
                 <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Field>
+                  <Field className="w-full max-w-sm">
                     <FieldLabel>Customer</FieldLabel>
                     <CustomerListDropDown
                       value={customerId}

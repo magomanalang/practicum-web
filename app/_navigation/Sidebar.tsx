@@ -49,12 +49,6 @@ export const devAdminLinks = [
     icon: Database,
   },
   { href: "/dev/employees", label: "Employees Table", icon: ShieldCheck },
-  { href: "/dev/role-map", label: "Employee Roles", icon: GitMerge },
-  {
-    href: "/dev/role-map-requests",
-    label: "Employee Roles Requests",
-    icon: GitMerge,
-  },
 
   {
     href: "/dev/register-employees",
@@ -66,7 +60,6 @@ export const devAdminLinks = [
     label: "Register Employees Requests",
     icon: UserCircle,
   },
-  { href: "/dev/promotions", label: "Promotions Config", icon: Tag },
   { href: "/dev/audit-logs", label: "Audit Logs", icon: GitMerge },
 ];
 
