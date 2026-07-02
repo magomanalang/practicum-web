@@ -1,21 +1,12 @@
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request) {
+export async function DELETE(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const { Email, EmployeeId } = await request.json();
 
-    if (!id) {
-      return NextResponse.json(
-        { message: "Missing required 'id' query parameter" },
-        { status: 400 },
-      );
-    }
-
-    const targetUrl = `${process.env.API_URL}/api/Customer/get-customer?id=${encodeURIComponent(id)}`;
-
+    const targetUrl = `${process.env.API_URL}/api/Employee/delete-employee?email=${encodeURIComponent(Email)}&employeeId=${encodeURIComponent(EmployeeId)}`;
     const res = await fetch(targetUrl, {
-      method: "GET",
+      method: "DELETE",
       cache: "no-store",
     });
 
